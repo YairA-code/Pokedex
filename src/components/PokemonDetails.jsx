@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import StatusMessage from './StatusMessage.jsx'
 import StatBar from './StatBar.jsx'
 import FavoriteButton from './FavoriteButton.jsx'
+import EvolutionChain from './EvolutionChain.jsx'
 import {
   getArtworkUrl,
   formatNumber,
   formatName,
   getEnglishDescription,
   getEnglishGenus,
+  getEvolutionStages,
   FIRST_ID,
   LAST_ID,
 } from '../utils/pokemon.js'
@@ -29,6 +31,8 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
   // 'loading' | 'error' | 'success'
   const [status, setStatus] = useState('loading')
   const [reloadCount, setReloadCount] = useState(0)
+  // Show the shiny (rare color) artwork instead of the normal one.
+  const [isShiny, setIsShiny] = useState(false)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -41,11 +45,14 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
           fetchJson(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`, controller.signal),
           fetchJson(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`, controller.signal),
         ])
+        // The species tells us where its evolution chain is, so this request comes after.
+        const evolution = await fetchJson(species.evolution_chain.url, controller.signal)
         // Keep only the fields we show, in a simple shape.
         setPokemon({
           id: data.id,
           name: data.name,
           image: data.sprites?.other?.['official-artwork']?.front_default || getArtworkUrl(data.id),
+          shinyImage: data.sprites?.other?.['official-artwork']?.front_shiny || null,
           types: data.types.map((item) => item.type.name),
           // Height comes in decimeters and weight in hectograms.
           heightMeters: data.height / 10,
@@ -63,6 +70,7 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
           habitat: species.habitat ? species.habitat.name : null,
           isLegendary: species.is_legendary,
           isMythical: species.is_mythical,
+          evolutionStages: getEvolutionStages(evolution.chain),
         })
         setStatus('success')
       } catch (error) {
@@ -119,6 +127,17 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
       <div className="pokemon-details__banner">
         <div className="pokemon-details__toolbar">
           <span className="pokemon-details__number">{formatNumber(pokemon.id)}</span>
+          {pokemon.shinyImage && (
+            <button
+              type="button"
+              className="pokemon-details__shiny"
+              aria-pressed={isShiny}
+              title="Show the shiny (rare color) version"
+              onClick={() => setIsShiny(!isShiny)}
+            >
+              ✨ Shiny
+            </button>
+          )}
           <FavoriteButton
             className="pokemon-details__favorite"
             isFavorite={isFavorite}
@@ -127,7 +146,11 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
           />
           {closeButton}
         </div>
-        <img className="pokemon-details__image" src={pokemon.image} alt={name} />
+        <img
+          className="pokemon-details__image"
+          src={isShiny ? pokemon.shinyImage : pokemon.image}
+          alt={isShiny ? `${name} (shiny)` : name}
+        />
       </div>
 
       <div className="pokemon-details__body">
@@ -181,6 +204,9 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
             <strong>{totalStats}</strong>
           </div>
         </div>
+
+        <h3 className="pokemon-details__heading">Evolution</h3>
+        <EvolutionChain stages={pokemon.evolutionStages} currentId={pokemon.id} onSelect={onSelect} />
 
         <nav className="pokemon-details__nav" aria-label="Previous and next Pokémon">
           <button

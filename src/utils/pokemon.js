@@ -82,3 +82,25 @@ export function getEnglishGenus(genera) {
 // The first and last Pokémon in our Pokédex.
 export const FIRST_ID = 1
 export const LAST_ID = 151
+
+// The evolution chain from the API is a tree: each step has "evolves_to" with the next steps.
+// We turn it into stages (a list per step), keeping only Pokémon up to #151:
+// Bulbasaur → [[bulbasaur], [ivysaur], [venusaur]]
+// Eevee     → [[eevee], [vaporeon, jolteon, flareon]]
+export function getEvolutionStages(chain) {
+  const stages = []
+
+  // A function that calls itself for every next step (recursion).
+  function visit(node, depth) {
+    const id = getIdFromUrl(node.species.url)
+    if (id <= LAST_ID) {
+      if (!stages[depth]) stages[depth] = []
+      stages[depth].push({ id, name: node.species.name })
+    }
+    node.evolves_to.forEach((next) => visit(next, depth + 1))
+  }
+
+  visit(chain, 0)
+  // Remove empty stages (for example a baby Pokémon from a later generation).
+  return stages.filter((stage) => stage !== undefined)
+}

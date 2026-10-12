@@ -898,3 +898,99 @@
     flex-wrap: wrap;
   }
 }
+
+/* ============ Shiny button ============ */
+
+.pokemon-details__shiny {
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.pokemon-details__shiny[aria-pressed='true'] {
+  border-color: #ffcb05;
+  background: #fff6cc;
+}
+
+/* ============ Evolution chain ============ */
+
+.evolution {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.evolution__stage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.evolution__arrow {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text-soft);
+}
+
+.evolution__options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+.evolution__item {
+  width: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px;
+  font: inherit;
+  color: var(--text);
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.evolution__item:hover {
+  background: var(--surface-soft);
+}
+
+.evolution__item--current {
+  border-color: var(--type-color, var(--red));
+  background: var(--surface-soft);
+}
+
+.evolution__item img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.evolution__name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.evolution__number {
+  font-size: 0.7rem;
+  color: var(--text-soft);
+}
+
+.evolution__none {
+  color: var(--text-soft);
+}
