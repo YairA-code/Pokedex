@@ -14,3 +14,5 @@
       *Done when:* the app looks tidy at 1280px and at 375px with no horizontal scroll.
 - [x] **7 · README and tests** — README with what the app does, how to run it and which API; Vitest tests for the helper functions.
       *Done when:* a new person can run the app from the README alone, and `npm test` passes.
+- [x] **8 · Upgrade: more features and a new design** — filter by type (`/type/{name}`), sort, favorites saved in `localStorage` (`useFavorites` hook), richer details (`/pokemon-species/{id}`: description, category, habitat; stat total; previous/next), skeleton loading, type-colored details, full-screen details on phones.
+      *Done when:* "Fire" shows only Fire Pokémon; a favorite stays after refresh; the details show the Pokédex text and "← / →" move between Pokémon; at 375px the details open full screen and × closes them.
