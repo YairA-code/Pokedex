@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import PokemonList from './components/PokemonList.jsx'
 import PokemonDetails from './components/PokemonDetails.jsx'
 import StatusMessage from './components/StatusMessage.jsx'
-import { getIdFromUrl } from './utils/pokemon.js'
+import SearchBar from './components/SearchBar.jsx'
+import { getIdFromUrl, filterPokemon } from './utils/pokemon.js'
 import './App.css'
 
 const LIST_URL = 'https://pokeapi.co/api/v2/pokemon?limit=151'
@@ -16,6 +17,8 @@ function App() {
   const [reloadCount, setReloadCount] = useState(0)
   // The id of the Pokémon the user clicked. null = nothing selected yet.
   const [selectedId, setSelectedId] = useState(null)
+  // What the user typed in the search box.
+  const [searchText, setSearchText] = useState('')
 
   useEffect(() => {
     // Lets us cancel the request if the component goes away.
@@ -53,6 +56,10 @@ function App() {
     setReloadCount((count) => count + 1)
   }
 
+  // Not stored in state: it is calculated from the list and the search text
+  // on every render, so it is always up to date.
+  const visiblePokemon = filterPokemon(pokemonList, searchText)
+
   return (
     <div className="app">
       <header className="app__header">
@@ -71,11 +78,22 @@ function App() {
 
       {status === 'success' && (
         <main className="app__main">
-          <PokemonList
-            pokemonList={pokemonList}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-          />
+          <div className="app__list">
+            <SearchBar
+              value={searchText}
+              onChange={setSearchText}
+              resultCount={visiblePokemon.length}
+            />
+            {visiblePokemon.length > 0 ? (
+              <PokemonList
+                pokemonList={visiblePokemon}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+              />
+            ) : (
+              <p className="app__empty">No Pokémon found.</p>
+            )}
+          </div>
           {selectedId ? (
             <PokemonDetails key={selectedId} pokemonId={selectedId} />
           ) : (
