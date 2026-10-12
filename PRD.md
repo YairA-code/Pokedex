@@ -1,35 +1,27 @@
-# PRD — <שם האפליקציה>
+# PRD — Pokédex
 
-> עמוד אחד. בלי קוד. אפשר לכתוב אותו בעזרת צ'אטבוט (ראו סעיף 5 בדף השיעור).
+## For whom
+Pokémon fans and players who want to look up the original 151 Pokémon quickly: what they look like, their types, abilities and base stats.
 
-## 1. Pitch
-משפט אחד: מה האפליקציה עושה, ולמי.
+## Why
+Big wiki sites are slow and full of noise. This app shows a clean, searchable list, and the details of the Pokémon you pick appear right next to it.
 
-## 2. Who it is for
-מי המשתמש, ומה הוא רוצה להשיג.
+## Data
+PokéAPI, public and free, no key needed:
+- List: `https://pokeapi.co/api/v2/pokemon?limit=151` (name + url for each Pokémon; the id is the number at the end of the url)
+- Details: `https://pokeapi.co/api/v2/pokemon/{id}` (types, abilities, height, weight, stats, artwork)
 
-## 3. Screens
-- **List** — מה מוצג בכל שורה ברשימה.
-- **Details** — מה מוצג על הפריט שנבחר.
+## Screens
+One screen with two parts (master-detail):
+1. **List** (left, or top on narrow screens): search box and a grid of cards (artwork + number + name).
+2. **Details** (right, or below on narrow screens): big artwork, name and number, type badges, height, weight, abilities, and a bar for each base stat.
 
-## 4. Must-have features
-עד 5. מה שלא נכנס לכאן — לא בונים עכשיו.
+## Acceptance lines
+- When I open the app, I see "Loading Pokémon..." and then 151 cards with a picture, number and name.
+- When the list fails to load, I see an error message and a "Try again" button that loads it again.
+- When I click a card, I see that Pokémon's details in the details panel and the card is highlighted.
+- When I type "char" or "25" in the search box, I see only matching Pokémon, and "No Pokémon found" if nothing matches.
+- When I open the app at phone width, I see the list above the details and nothing overflows sideways.
 
-1.
-2.
-3.
-
-## 5. Acceptance criteria
-3–5 שורות שאפשר לבדוק בעיניים.
-
-- When I ..., I see ...
-- When I ..., I see ...
-- When I ..., I see ...
-
-## 6. Not now
-רעיונות טובים שנשארים לגרסה הבאה.
-
-## 7. Data
-- **API:** `https://...`
-- **שדות ברשימה:**
-- **שדות בפרטים:**
+## Out of scope
+Server, database, login, routing, Redux, UI libraries, paid APIs or API keys.
