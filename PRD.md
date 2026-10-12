@@ -14,8 +14,8 @@ One screen, two parts (master-detail):
 ## 4. Must-have features
 1. List of the first 151 Pokémon from the API; clicking a card shows its details.
 2. Loading and error states (with "Try again") for the list, the type filter and the details.
-3. Search by name or number, filter by type, and sort by number or name.
-4. Favorites with a heart, saved in the browser, and a "favorites only" view.
+3. Search by name or number, filter by type, sort, clear filters, and "Surprise me" for a random Pokémon.
+4. Favorites (saved in the browser), the evolution chain and a shiny toggle in the details, and dark mode.
 5. Works on wide screens (two columns) and phones (details open full screen).
 
 ## 5. Acceptance criteria
@@ -29,9 +29,9 @@ One screen, two parts (master-detail):
 ## 6. Not now
 - A separate URL for each Pokémon (React Router).
 - Pokémon after #151.
-- Evolution chains and moves.
+- Moves and where to find each Pokémon.
 
 ## 7. Data
-- **API (PokéAPI, free, no key):** `/pokemon?limit=151` (list), `/pokemon/{id}` (details), `/pokemon-species/{id}` (description, category, habitat), `/type/{name}` (Pokémon of one type). Base URL `https://pokeapi.co/api/v2`.
+- **API (PokéAPI, free, no key):** `/pokemon?limit=151` (list), `/pokemon/{id}` (details), `/pokemon-species/{id}` (description, category, habitat), `/type/{name}` (Pokémon of one type), `/evolution-chain/{id}` (evolution stages). Base URL `https://pokeapi.co/api/v2`.
 - **Fields in the list:** `name`, `url` (the id is the number at the end of the url; the artwork image is built from the id).
 - **Fields in the details:** `id`, `name`, `types`, `height`, `weight`, `abilities` (with `is_hidden`), `stats`, `sprites.other["official-artwork"]`; from the species: `flavor_text_entries`, `genera`, `habitat`, `is_legendary`, `is_mythical`.
