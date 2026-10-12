@@ -15,3 +15,15 @@
   border: 1px solid #ddd;
   border-radius: 8px;
 }
+
+.pokemon-card {
+  width: 100%;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.pokemon-card--selected {
+  border-color: #e3350d;
+  outline: 2px solid #e3350d;
+}
