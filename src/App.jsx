@@ -191,7 +191,14 @@ function App() {
             {renderList()}
           </div>
           {selectedId ? (
-            <PokemonDetails key={selectedId} pokemonId={selectedId} />
+            <PokemonDetails
+              key={selectedId}
+              pokemonId={selectedId}
+              isFavorite={favorites.includes(selectedId)}
+              onToggleFavorite={toggleFavorite}
+              onSelect={setSelectedId}
+              onClose={() => setSelectedId(null)}
+            />
           ) : (
             <section className="pokemon-details pokemon-details--empty">
               <p>Choose a Pokémon from the list to see its details.</p>

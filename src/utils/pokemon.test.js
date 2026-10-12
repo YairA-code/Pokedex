@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { getIdFromUrl, formatNumber, formatName, filterPokemon, sortPokemon } from './pokemon.js'
+import { getIdFromUrl, formatNumber, formatName, filterPokemon, sortPokemon,
+  getEnglishDescription, getEnglishGenus } from './pokemon.js'
 
 describe('helpers', () => {
   it('reads the id from a PokéAPI url', () => {
@@ -54,5 +55,24 @@ describe('sortPokemon', () => {
   it('sorts by name and does not change the original list', () => {
     expect(sortPokemon(list, 'name').map((p) => p.name)).toEqual(['bulbasaur', 'charmander', 'pikachu'])
     expect(list[0].id).toBe(25)
+  })
+})
+
+describe('species helpers', () => {
+  const en = { name: 'en' }
+  const ja = { name: 'ja' }
+
+  it('takes the newest English description and cleans line breaks', () => {
+    const entries = [
+      { flavor_text: 'Old\nPOKéMON\ftext.', language: en },
+      { flavor_text: '日本語', language: ja },
+      { flavor_text: 'New\nPOKéMON\ftext.', language: en },
+    ]
+    expect(getEnglishDescription(entries)).toBe('New Pokémon text.')
+    expect(getEnglishDescription([])).toBe('')
+  })
+
+  it('finds the English genus', () => {
+    expect(getEnglishGenus([{ genus: 'ねずみ', language: ja }, { genus: 'Mouse Pokémon', language: en }])).toBe('Mouse Pokémon')
   })
 })

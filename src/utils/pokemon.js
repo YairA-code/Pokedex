@@ -60,3 +60,25 @@ export function sortPokemon(pokemonList, sortOrder) {
   }
   return copy
 }
+
+// The species API has descriptions in many languages and game versions.
+// We take the newest English one and clean the line breaks the games use.
+export function getEnglishDescription(flavorTextEntries) {
+  const english = flavorTextEntries.filter((entry) => entry.language.name === 'en')
+  if (english.length === 0) return ''
+  const newest = english[english.length - 1]
+  return newest.flavor_text
+    .replace(/[\n\f\r]+/g, ' ')
+    .replace(/POKéMON/g, 'Pokémon')
+    .trim()
+}
+
+// "Mouse Pokémon" — the English category of the species.
+export function getEnglishGenus(genera) {
+  const english = genera.find((item) => item.language.name === 'en')
+  return english ? english.genus : ''
+}
+
+// The first and last Pokémon in our Pokédex.
+export const FIRST_ID = 1
+export const LAST_ID = 151
