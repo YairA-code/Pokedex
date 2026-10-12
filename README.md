@@ -1,108 +1,63 @@
-# נקודת פתיחה לפרויקט הגמר · React + Vite
+# Pokédex
 
-תבנית להתחלת פרויקט הגמר בקורס **4255 · פלטפורמות מתקדמות לפיתוח ב-WEB ושימוש ב-AI**.
-יש בה אפליקציית React ריקה שרצה, תבניות ל-`PRD.md` ו-`tasks.md`, וכללי עבודה לסוכן —
-ובעיקר **רישום אוטומטי של הפרומפטים** שאתם שולחים לסוכן, אל תוך `PROMPTS.md`.
+A master-detail React app for the original 151 Pokémon.
+On the left you see a searchable list of cards; click a card and its details appear on the right: artwork, types, height, weight, abilities and base stats.
 
-## התחלה מהירה
+## Features
+- List of 151 Pokémon loaded from the API, each with artwork, number and name
+- Click a card (or press Enter on it) to see that Pokémon's details
+- Search by name (`char`) or by number (`25`, `#025`)
+- Loading and error states for both the list and the details, with a "Try again" button
+- Works on wide screens (two columns) and phone screens (stacked)
 
-לחצו **Use this template** ← **Create a new repository**, ואז:
+## How to run
+You need Node.js 20 or newer.
 
 ```bash
-git clone https://github.com/<שם-המשתמש-שלכם>/<שם-הפרויקט>.git
-cd <שם-הפרויקט>
 npm install
 npm run dev
 ```
 
-פתחו את הכתובת שמופיעה בטרמינל (בדרך כלל `http://localhost:5173`).
+Then open the address Vite prints (usually http://localhost:5173).
 
-## מה יש כאן
-
-```
-.claude/settings.json     hook ל-Claude Code
-.codex/hooks.json         hook ל-Codex
-.gemini/settings.json     hook ל-Gemini CLI
-.agents/hooks.json        hook ל-Antigravity
-scripts/log-prompt.mjs    הסקריפט שכותב ל-PROMPTS.md
-AGENTS.md                 כללי עבודה לסוכן (היקף, משימה אחת בכל פעם)
-PRD.md                    תבנית: מה בונים ולמה
-tasks.md                  תבנית: עד 8 משימות בסדר בנייה
-PROMPTS.md                יומן העבודה מול הסוכן — נכתב אוטומטית
-src/                      האפליקציה
-```
-
-## יומן הפרומפטים — איך זה עובד
-
-לסוכנים יש **hooks**: נקודות שבהן הם מריצים פקודה משלכם. כאן מחובר hook אחד,
-`UserPromptSubmit`, שרץ **בכל פעם שאתם שולחים הודעה לסוכן**. הוא מעביר לסקריפט
-`scripts/log-prompt.mjs` את הפרומפט, והסקריפט מוסיף אותו ל-`PROMPTS.md` עם שעה ושם הסוכן.
-
-אתם לא צריכים לעשות כלום. פשוט תעבדו.
-
-<!-- דוגמה לרשומה -->
-```markdown
-## 2026-10-14
-
-**18:42 · claude**
-
-> תוסיף שדה חיפוש מעל הרשימה
-
-**18:55 · claude**
-
-> החיפוש מוחק את הרשימה כשמוחקים את כל האותיות. תתקן
-```
-
-הרשומה השנייה היא בדיוק מה שאנחנו מחפשים: **תהליך**. ניסיון, בדיקה, תיקון.
-פרויקט עם פרומפט אחד ענק בהתחלה ושום דבר אחריו — נראה בדיוק ככה ביומן.
-
-### סוכנים נתמכים
-
-| סוכן | מה מוגדר כאן | מצב |
-|---|---|---|
-| **Claude Code** | `.claude/settings.json` | אוטומטי |
-| **Codex CLI** | `.codex/hooks.json` | אוטומטי |
-| **Gemini CLI** | `.gemini/settings.json` | אוטומטי |
-| **Antigravity** | `.agents/hooks.json` | אוטומטי, ראו למטה |
-| **GitHub Copilot** וכלים אחרים | הוראה ב-`AGENTS.md` | הסוכן רושם בעצמו, ראו למטה |
-
-**Gemini CLI** — בהפעלה הראשונה תופיע אזהרה על hook חדש בפרויקט. זה ה-hook הזה.
-
-**Antigravity** — ה-hooks שלו **לא מקבלים את טקסט הפרומפט**, אבל כן מקבלים את הנתיב לקובץ
-השיחה. הסקריפט קורא משם את ההודעות שלכם, ולכן רשומה יכולה להופיע רק כשהסוכן מסיים לענות.
-ב-Antigravity CLI הגדרות ברמת הפרויקט לא תמיד נטענות — בדקו אצלכם (ראו "בדיקה שזה עובד").
-
-**Copilot וכלים אחרים** — אין להם hook כזה. במקומו יש ב-`AGENTS.md` הוראה לסוכן להוסיף כל
-הודעה שלכם ליומן בעצמו. סוכן יכול לשכוח או לקצר, אז **האחריות עליכם**: ודאו שהרשומה נכתבה.
-
-אם רשומה חסרה, בכל כלי — הוסיפו אותה בעצמכם:
-
-```markdown
-**14:20 · copilot**
-
-> מה ביקשתי
-```
-
-### בדיקה שזה עובד
-
-שלחו לסוכן הודעה כלשהי, ואז:
+Other commands:
 
 ```bash
-tail -n 20 PROMPTS.md
+npm test        # run the Vitest tests
+npm run lint    # check the code with oxlint
+npm run build   # production build into dist/
 ```
 
-רואים את ההודעה? מצוין. לא רואים? ודאו ש-`node -v` עובד בטרמינל, ושפתחתם את הסוכן
-**מתוך תיקיית הפרויקט**. ב-Claude Code צריך לאשר את ה-hook פעם אחת בהפעלה הראשונה.
+## API
+[PokéAPI](https://pokeapi.co/) — free, public, no API key.
+- List: `https://pokeapi.co/api/v2/pokemon?limit=151`
+- Details: `https://pokeapi.co/api/v2/pokemon/{id}`
+- Artwork images come from the PokéAPI sprites repository on GitHub.
 
-## מה מגישים
+## Project structure
+```
+src/
+  App.jsx                  main component: list state, search state, selected id
+  components/
+    SearchBar.jsx          controlled search input
+    PokemonList.jsx        the list, built with map and key
+    PokemonCard.jsx        one card in the list
+    PokemonDetails.jsx     fetches and shows one Pokémon's details
+    StatBar.jsx            one base-stat bar
+    StatusMessage.jsx      loading / error message
+  utils/
+    pokemon.js             helper functions (id from url, formatting, search filter)
+    pokemon.test.js        Vitest tests for the helpers
+```
 
-`PROMPTS.md` הוא חלק מהציון — 6 נקודות מתוך 20 של תהליך העבודה. לכן:
+## How it works (short)
+- `App` keeps the state: the list, the loading status, the search text and the selected id.
+- The list is loaded with `fetch` inside `useEffect`; the result decides which of the three states is shown: loading, error or the list.
+- The visible list is calculated on every render with `filterPokemon(list, searchText)`, so it is not stored in state.
+- Clicking a card calls `onSelect(id)`, which comes down from `App` as a prop and updates `selectedId`.
+- `PokemonDetails` gets `key={selectedId}`, so every new pick starts with fresh state, and its effect fetches `/pokemon/{id}`. An `AbortController` cancels the old request when the selection changes.
 
-- **תעשו לו commit יחד עם הקוד**, אחרי כל משימה. `git add PROMPTS.md`.
-- אחרי כל משימה הוסיפו שורה משלכם: מה בדקתם, ומה שיניתם בעצמכם. זה מה שהופך יומן לתהליך.
-- אל תערכו אותו בדיעבד כדי שייראה יפה. יומן מסודר מדי בולט לרעה.
-
-> **פרטיות:** כל מה שאתם כותבים לסוכן נשמר בקובץ ועולה ל-GitHub. אל תכתבו בפרומפטים
-> סיסמאות, מפתחות, או פרטים אישיים של מישהו.
-
-אפשר לכבות את הרישום (למחוק את קובץ ה-hook של הסוכן שלכם), אבל אז אין יומן, ואין את הנקודות האלה.
+## Planning files
+- `PRD.md` — the product requirements
+- `tasks.md` — the task plan
+- `PROMPTS.md` — log of prompts sent to the AI agent
