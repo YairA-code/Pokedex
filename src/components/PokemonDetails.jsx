@@ -89,7 +89,7 @@ function PokemonDetails({ pokemonId }) {
 
       <ul className="pokemon-details__types">
         {pokemon.types.map((type) => (
-          <li key={type} className={`type-badge type-badge--${type}`}>
+          <li key={type} className={`type-badge type-color--${type}`}>
             {formatName(type)}
           </li>
         ))}

@@ -258,7 +258,31 @@
   border-radius: 999px;
 }
 
-/* ---------- Type badges (one color per type) ---------- */
+/* ---------- Type colors ----------
+   Each type class sets one variable, --type-color.
+   Badges, filter chips and the details banner all read it. */
+
+.type-color--all { --type-color: #3b3b4f; }
+.type-color--normal { --type-color: #9fa19f; }
+.type-color--fire { --type-color: #e62829; }
+.type-color--water { --type-color: #2980ef; }
+.type-color--grass { --type-color: #3fa129; }
+.type-color--electric { --type-color: #e0b400; }
+.type-color--ice { --type-color: #3dcef3; }
+.type-color--fighting { --type-color: #ff8000; }
+.type-color--poison { --type-color: #9141cb; }
+.type-color--ground { --type-color: #915121; }
+.type-color--flying { --type-color: #81b9ef; }
+.type-color--psychic { --type-color: #ef4179; }
+.type-color--bug { --type-color: #91a119; }
+.type-color--rock { --type-color: #afa981; }
+.type-color--ghost { --type-color: #704170; }
+.type-color--dragon { --type-color: #5060e1; }
+.type-color--dark { --type-color: #624d4e; }
+.type-color--steel { --type-color: #60a1b8; }
+.type-color--fairy { --type-color: #ef70ef; }
+
+/* ---------- Type badges ---------- */
 
 .type-badge {
   padding: 3px 12px;
@@ -266,28 +290,57 @@
   color: #fff;
   font-size: 0.85rem;
   font-weight: 600;
-  background: #777;
+  background: var(--type-color, #777);
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
 }
 
-.type-badge--normal { background: #9fa19f; }
-.type-badge--fire { background: #e62829; }
-.type-badge--water { background: #2980ef; }
-.type-badge--grass { background: #3fa129; }
-.type-badge--electric { background: #e0b400; }
-.type-badge--ice { background: #3dcef3; }
-.type-badge--fighting { background: #ff8000; }
-.type-badge--poison { background: #9141cb; }
-.type-badge--ground { background: #915121; }
-.type-badge--flying { background: #81b9ef; }
-.type-badge--psychic { background: #ef4179; }
-.type-badge--bug { background: #91a119; }
-.type-badge--rock { background: #afa981; }
-.type-badge--ghost { background: #704170; }
-.type-badge--dragon { background: #5060e1; }
-.type-badge--dark { background: #624d4e; }
-.type-badge--steel { background: #60a1b8; }
-.type-badge--fairy { background: #ef70ef; }
+/* ---------- Type filter ---------- */
+
+.type-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.type-filter__chip {
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--type-color);
+  background: var(--surface);
+  border: 2px solid var(--type-color);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.type-filter__chip[aria-pressed='true'] {
+  color: #fff;
+  background: var(--type-color);
+}
+
+/* ---------- Sort ---------- */
+
+.sort-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sort-select__label {
+  font-weight: 600;
+}
+
+.sort-select__input {
+  padding: 6px 10px;
+  font: inherit;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
 
 /* ---------- Loading and error ---------- */
 

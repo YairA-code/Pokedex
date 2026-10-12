@@ -3,7 +3,9 @@ import PokemonList from './components/PokemonList.jsx'
 import PokemonDetails from './components/PokemonDetails.jsx'
 import StatusMessage from './components/StatusMessage.jsx'
 import SearchBar from './components/SearchBar.jsx'
-import { getIdFromUrl, filterPokemon } from './utils/pokemon.js'
+import TypeFilter from './components/TypeFilter.jsx'
+import SortSelect from './components/SortSelect.jsx'
+import { getIdFromUrl, filterPokemon, sortPokemon, formatName } from './utils/pokemon.js'
 import './App.css'
 
 const LIST_URL = 'https://pokeapi.co/api/v2/pokemon?limit=151'
@@ -19,7 +21,17 @@ function App() {
   const [selectedId, setSelectedId] = useState(null)
   // What the user typed in the search box.
   const [searchText, setSearchText] = useState('')
+  // 'number' | 'name'
+  const [sortOrder, setSortOrder] = useState('number')
 
+  // Type filter: the chosen type, and the ids of the Pokémon of that type.
+  const [selectedType, setSelectedType] = useState('all')
+  const [typeIds, setTypeIds] = useState(null)
+  // 'loading' | 'error' | 'success'
+  const [typeStatus, setTypeStatus] = useState('success')
+  const [typeReloadCount, setTypeReloadCount] = useState(0)
+
+  // Load the list of 151 Pokémon.
   useEffect(() => {
     // Lets us cancel the request if the component goes away.
     const controller = new AbortController()
@@ -51,14 +63,79 @@ function App() {
     return () => controller.abort()
   }, [reloadCount])
 
+  // Load which Pokémon belong to the selected type.
+  useEffect(() => {
+    if (selectedType === 'all') return
+
+    const controller = new AbortController()
+
+    async function loadType() {
+      try {
+        const response = await fetch(`https://pokeapi.co/api/v2/type/${selectedType}`, {
+          signal: controller.signal,
+        })
+        if (!response.ok) {
+          throw new Error(`The server answered with status ${response.status}.`)
+        }
+        const data = await response.json()
+        // A Set makes "is this id in the type?" a quick check.
+        setTypeIds(new Set(data.pokemon.map((entry) => getIdFromUrl(entry.pokemon.url))))
+        setTypeStatus('success')
+      } catch (error) {
+        if (error.name === 'AbortError') return
+        setTypeStatus('error')
+      }
+    }
+
+    loadType()
+
+    return () => controller.abort()
+  }, [selectedType, typeReloadCount])
+
   function handleRetry() {
     setStatus('loading')
     setReloadCount((count) => count + 1)
   }
 
-  // Not stored in state: it is calculated from the list and the search text
-  // on every render, so it is always up to date.
-  const visiblePokemon = filterPokemon(pokemonList, searchText)
+  function handleTypeChange(type) {
+    setSelectedType(type)
+    setTypeIds(null)
+    setTypeStatus(type === 'all' ? 'success' : 'loading')
+  }
+
+  function handleTypeRetry() {
+    setTypeStatus('loading')
+    setTypeReloadCount((count) => count + 1)
+  }
+
+  // Not stored in state: calculated from the other state on every render,
+  // so it is always up to date.
+  let visiblePokemon = filterPokemon(pokemonList, searchText)
+  if (selectedType !== 'all' && typeIds) {
+    visiblePokemon = visiblePokemon.filter((pokemon) => typeIds.has(pokemon.id))
+  }
+  visiblePokemon = sortPokemon(visiblePokemon, sortOrder)
+
+  function renderList() {
+    if (typeStatus === 'loading') {
+      return <StatusMessage type="loading" message={`Loading ${formatName(selectedType)} Pokémon...`} />
+    }
+    if (typeStatus === 'error') {
+      return (
+        <StatusMessage
+          type="error"
+          message={`Could not load the ${formatName(selectedType)} type.`}
+          onRetry={handleTypeRetry}
+        />
+      )
+    }
+    if (visiblePokemon.length === 0) {
+      return <p className="app__empty">No Pokémon found.</p>
+    }
+    return (
+      <PokemonList pokemonList={visiblePokemon} selectedId={selectedId} onSelect={setSelectedId} />
+    )
+  }
 
   return (
     <div className="app">
@@ -82,17 +159,11 @@ function App() {
             <SearchBar
               value={searchText}
               onChange={setSearchText}
-              resultCount={visiblePokemon.length}
+              resultCount={typeStatus === 'success' ? visiblePokemon.length : 0}
             />
-            {visiblePokemon.length > 0 ? (
-              <PokemonList
-                pokemonList={visiblePokemon}
-                selectedId={selectedId}
-                onSelect={setSelectedId}
-              />
-            ) : (
-              <p className="app__empty">No Pokémon found.</p>
-            )}
+            <SortSelect value={sortOrder} onChange={setSortOrder} />
+            <TypeFilter selectedType={selectedType} onChange={handleTypeChange} />
+            {renderList()}
           </div>
           {selectedId ? (
             <PokemonDetails key={selectedId} pokemonId={selectedId} />

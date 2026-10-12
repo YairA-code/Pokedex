@@ -40,3 +40,23 @@ export function filterPokemon(pokemonList, searchText) {
     pokemon.name.replaceAll('-', ' ').includes(text.replaceAll('-', ' ')),
   )
 }
+
+// The types used by the first 151 Pokémon (in today's PokéAPI data).
+// This is a fixed list for the filter buttons; which Pokémon belong to each
+// type always comes from the API (/type/{name}).
+export const POKEMON_TYPES = [
+  'normal', 'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison', 'ground',
+  'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'steel', 'fairy',
+]
+
+// Returns a new sorted list. sortOrder: 'number' | 'name'.
+// We copy the list first, because sort() changes the array it is called on.
+export function sortPokemon(pokemonList, sortOrder) {
+  const copy = [...pokemonList]
+  if (sortOrder === 'name') {
+    copy.sort((a, b) => a.name.localeCompare(b.name))
+  } else {
+    copy.sort((a, b) => a.id - b.id)
+  }
+  return copy
+}

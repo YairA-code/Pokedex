@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getIdFromUrl, formatNumber, formatName, filterPokemon } from './pokemon.js'
+import { getIdFromUrl, formatNumber, formatName, filterPokemon, sortPokemon } from './pokemon.js'
 
 describe('helpers', () => {
   it('reads the id from a PokéAPI url', () => {
@@ -37,5 +37,22 @@ describe('filterPokemon', () => {
 
   it('returns an empty list when nothing matches', () => {
     expect(filterPokemon(list, 'xyz')).toEqual([])
+  })
+})
+
+describe('sortPokemon', () => {
+  const list = [
+    { id: 25, name: 'pikachu' },
+    { id: 4, name: 'charmander' },
+    { id: 1, name: 'bulbasaur' },
+  ]
+
+  it('sorts by number', () => {
+    expect(sortPokemon(list, 'number').map((p) => p.id)).toEqual([1, 4, 25])
+  })
+
+  it('sorts by name and does not change the original list', () => {
+    expect(sortPokemon(list, 'name').map((p) => p.name)).toEqual(['bulbasaur', 'charmander', 'pikachu'])
+    expect(list[0].id).toBe(25)
   })
 })
