@@ -180,6 +180,19 @@ function App() {
   }
 
   const isListReady = typeStatus === 'success'
+  const hasFilters = searchText !== '' || selectedType !== 'all' || showFavoritesOnly
+
+  function clearFilters() {
+    setSearchText('')
+    handleTypeChange('all')
+    setShowFavoritesOnly(false)
+  }
+
+  // Open a random Pokémon from the ones shown right now.
+  function showRandomPokemon() {
+    const index = Math.floor(Math.random() * visiblePokemon.length)
+    setSelectedId(visiblePokemon[index].id)
+  }
 
   return (
     <div className="app">
@@ -221,8 +234,21 @@ function App() {
               <div className="toolbar__row">
                 <p className="toolbar__count">
                   {isListReady ? `${visiblePokemon.length} Pokémon shown` : 'Loading...'}
+                  {hasFilters && (
+                    <button type="button" className="toolbar__clear" onClick={clearFilters}>
+                      Clear filters
+                    </button>
+                  )}
                 </p>
                 <div className="toolbar__actions">
+                  <button
+                    type="button"
+                    className="toolbar__button"
+                    onClick={showRandomPokemon}
+                    disabled={!isListReady || visiblePokemon.length === 0}
+                  >
+                    🎲 Surprise me
+                  </button>
                   <FavoritesToggle
                     isOn={showFavoritesOnly}
                     count={favorites.length}
