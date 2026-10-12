@@ -5,6 +5,8 @@ import StatusMessage from './components/StatusMessage.jsx'
 import SearchBar from './components/SearchBar.jsx'
 import TypeFilter from './components/TypeFilter.jsx'
 import SortSelect from './components/SortSelect.jsx'
+import FavoritesToggle from './components/FavoritesToggle.jsx'
+import { useFavorites } from './hooks/useFavorites.js'
 import { getIdFromUrl, filterPokemon, sortPokemon, formatName } from './utils/pokemon.js'
 import './App.css'
 
@@ -23,6 +25,9 @@ function App() {
   const [searchText, setSearchText] = useState('')
   // 'number' | 'name'
   const [sortOrder, setSortOrder] = useState('number')
+  // Favorites: the ids, saved in localStorage by our custom hook.
+  const { favorites, toggleFavorite } = useFavorites()
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
 
   // Type filter: the chosen type, and the ids of the Pokémon of that type.
   const [selectedType, setSelectedType] = useState('all')
@@ -114,6 +119,9 @@ function App() {
   if (selectedType !== 'all' && typeIds) {
     visiblePokemon = visiblePokemon.filter((pokemon) => typeIds.has(pokemon.id))
   }
+  if (showFavoritesOnly) {
+    visiblePokemon = visiblePokemon.filter((pokemon) => favorites.includes(pokemon.id))
+  }
   visiblePokemon = sortPokemon(visiblePokemon, sortOrder)
 
   function renderList() {
@@ -130,10 +138,22 @@ function App() {
       )
     }
     if (visiblePokemon.length === 0) {
-      return <p className="app__empty">No Pokémon found.</p>
+      return (
+        <p className="app__empty">
+          {showFavoritesOnly && favorites.length === 0
+            ? 'No favorites yet. Tap the heart on a Pokémon to add it.'
+            : 'No Pokémon found.'}
+        </p>
+      )
     }
     return (
-      <PokemonList pokemonList={visiblePokemon} selectedId={selectedId} onSelect={setSelectedId} />
+      <PokemonList
+        pokemonList={visiblePokemon}
+        selectedId={selectedId}
+        favorites={favorites}
+        onSelect={setSelectedId}
+        onToggleFavorite={toggleFavorite}
+      />
     )
   }
 
@@ -162,6 +182,11 @@ function App() {
               resultCount={typeStatus === 'success' ? visiblePokemon.length : 0}
             />
             <SortSelect value={sortOrder} onChange={setSortOrder} />
+            <FavoritesToggle
+              isOn={showFavoritesOnly}
+              count={favorites.length}
+              onChange={setShowFavoritesOnly}
+            />
             <TypeFilter selectedType={selectedType} onChange={handleTypeChange} />
             {renderList()}
           </div>

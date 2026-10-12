@@ -419,3 +419,62 @@
     height: 160px;
   }
 }
+
+/* ---------- Favorites ---------- */
+
+.pokemon-card-wrap {
+  position: relative;
+}
+
+.favorite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.favorite-button svg {
+  fill: none;
+  stroke: #b8b8c4;
+  stroke-width: 2;
+  transition: transform 0.15s;
+}
+
+.favorite-button:hover svg {
+  stroke: var(--red);
+  transform: scale(1.15);
+}
+
+.favorite-button--on svg {
+  fill: var(--red);
+  stroke: var(--red);
+}
+
+.pokemon-card__favorite {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+.favorites-toggle {
+  margin: 0 0 12px 12px;
+  padding: 6px 14px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--red);
+  background: var(--surface);
+  border: 2px solid var(--red);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.favorites-toggle--on {
+  color: #fff;
+  background: var(--red);
+}
