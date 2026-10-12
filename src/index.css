@@ -1,3 +1,17 @@
+:root {
+  --red: #dc0a2d;
+  --red-dark: #a8001d;
+  --bg: #f2f2f5;
+  --surface: #ffffff;
+  --text: #1d1d24;
+  --text-soft: #666673;
+  --border: #e1e1e8;
+  --radius: 14px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  color-scheme: light;
+}
+
 *,
 *::before,
 *::after {
@@ -6,10 +20,20 @@
 
 body {
   margin: 0;
+  background: var(--bg);
+  color: var(--text);
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
 }
 
 img {
   max-width: 100%;
   display: block;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
 }
