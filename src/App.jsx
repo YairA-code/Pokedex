@@ -53,8 +53,6 @@ function App() {
     setReloadCount((count) => count + 1)
   }
 
-  const selectedPokemon = pokemonList.find((pokemon) => pokemon.id === selectedId)
-
   return (
     <div className="app">
       <header className="app__header">
@@ -78,7 +76,13 @@ function App() {
             selectedId={selectedId}
             onSelect={setSelectedId}
           />
-          <PokemonDetails pokemon={selectedPokemon} />
+          {selectedId ? (
+            <PokemonDetails key={selectedId} pokemonId={selectedId} />
+          ) : (
+            <section className="pokemon-details pokemon-details--empty">
+              <p>Choose a Pokémon from the list to see its details.</p>
+            </section>
+          )}
         </main>
       )}
     </div>
