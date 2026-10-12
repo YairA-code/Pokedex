@@ -1,27 +1,37 @@
 # PRD — Pokédex
 
-## For whom
-Pokémon fans and players who want to look up the original 151 Pokémon quickly: what they look like, their types, abilities and base stats.
+## 1. Pitch
+A Pokédex for the original 151 Pokémon: search the list and see any Pokémon's types, abilities and base stats next to it.
 
-## Why
-Big wiki sites are slow and full of noise. This app shows a clean, searchable list, and the details of the Pokémon you pick appear right next to it.
+## 2. Who it is for
+Pokémon fans and players who want to look up a Pokémon quickly, without the noise and slow pages of the big wiki sites.
 
-## Data
-PokéAPI, public and free, no key needed:
-- List: `https://pokeapi.co/api/v2/pokemon?limit=151` (name + url for each Pokémon; the id is the number at the end of the url)
-- Details: `https://pokeapi.co/api/v2/pokemon/{id}` (types, abilities, height, weight, stats, artwork)
+## 3. Screens
+One screen, two parts (master-detail):
+- **List** — a card for each Pokémon: artwork, number and name. A search box above the list.
+- **Details** — the selected Pokémon: big artwork, number and name, type badges, height, weight, abilities, and a bar for each base stat.
 
-## Screens
-One screen with two parts (master-detail):
-1. **List** (left, or top on narrow screens): search box and a grid of cards (artwork + number + name).
-2. **Details** (right, or below on narrow screens): big artwork, name and number, type badges, height, weight, abilities, and a bar for each base stat.
+## 4. Must-have features
+1. List of the first 151 Pokémon, loaded from the API.
+2. Clicking a card shows its details; the selected card is highlighted.
+3. Loading and error states (with "Try again") for the list and for the details.
+4. Search by name or by number.
+5. Works on wide screens (two columns) and on phone screens (stacked).
 
-## Acceptance lines
+## 5. Acceptance criteria
 - When I open the app, I see "Loading Pokémon..." and then 151 cards with a picture, number and name.
 - When the list fails to load, I see an error message and a "Try again" button that loads it again.
 - When I click a card, I see that Pokémon's details in the details panel and the card is highlighted.
 - When I type "char" or "25" in the search box, I see only matching Pokémon, and "No Pokémon found" if nothing matches.
 - When I open the app at phone width, I see the list above the details and nothing overflows sideways.
 
-## Out of scope
-Server, database, login, routing, Redux, UI libraries, paid APIs or API keys.
+## 6. Not now
+- Filter by type (needs another API call per type).
+- Favorites saved in `localStorage`.
+- A separate URL for each Pokémon (React Router).
+- Pokémon after #151.
+
+## 7. Data
+- **API:** `https://pokeapi.co/api/v2/pokemon?limit=151` (list) and `https://pokeapi.co/api/v2/pokemon/{id}` (details). Free, no key.
+- **Fields in the list:** `name`, `url` (the id is the number at the end of the url; the artwork image is built from the id).
+- **Fields in the details:** `id`, `name`, `types`, `height`, `weight`, `abilities` (with `is_hidden`), `stats`, `sprites.other["official-artwork"]`.
