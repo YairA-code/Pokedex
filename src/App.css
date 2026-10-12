@@ -145,7 +145,7 @@
 }
 
 .type-filter__chip:hover {
-  background: color-mix(in srgb, var(--type-color) 12%, white);
+  background: color-mix(in srgb, var(--type-color) 14%, var(--surface));
 }
 
 .type-filter__chip[aria-pressed='true'] {
@@ -349,7 +349,7 @@
 
 .skeleton-card__image,
 .skeleton-card__line {
-  background: linear-gradient(90deg, #ececf2 0%, #f7f7fb 50%, #ececf2 100%);
+  background: linear-gradient(90deg, var(--surface-soft) 0%, var(--surface) 50%, var(--surface-soft) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.2s linear infinite;
 }
@@ -434,7 +434,7 @@
   height: 36px;
   font-size: 1.5rem;
   line-height: 1;
-  color: var(--text);
+  color: #1c1d26;
   background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;
@@ -442,6 +442,7 @@
 }
 
 .pokemon-details--status .pokemon-details__close {
+  color: var(--text);
   background: var(--surface-soft);
 }
 
@@ -906,7 +907,7 @@
   font: inherit;
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--text);
+  color: #1c1d26;
   background: rgba(255, 255, 255, 0.9);
   border: 2px solid transparent;
   border-radius: 999px;
@@ -993,4 +994,62 @@
 
 .evolution__none {
   color: var(--text-soft);
+}
+
+/* ============ Theme toggle ============ */
+
+.app__header-inner {
+  position: relative;
+}
+
+.theme-toggle {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  font-size: 1.25rem;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 640px) {
+  .theme-toggle {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+  }
+}
+
+/* ============ Dark mode details ============ */
+
+[data-theme='dark'] .app__header {
+  background: linear-gradient(135deg, #8f1d16 0%, #5c1022 100%);
+}
+
+[data-theme='dark'] .tag {
+  color: #ffe08a;
+  background: rgba(255, 224, 138, 0.15);
+}
+
+[data-theme='dark'] .empty-state__icon {
+  border-color: #0f1016;
+  background: linear-gradient(180deg, var(--red) 0 48%, #0f1016 48% 52%, #e8e8ef 52%);
+}
+
+[data-theme='dark'] .type-color--all {
+  --type-color: #c9cad8;
+}
+
+[data-theme='dark'] .type-filter__chip.type-color--all[aria-pressed='true'] {
+  color: #12131a;
+}
+
+[data-theme='dark'] .type-filter__chip:not([aria-pressed='true']) {
+  color: color-mix(in srgb, var(--type-color) 65%, white);
 }

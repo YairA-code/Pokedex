@@ -16,6 +16,23 @@
   color-scheme: light;
 }
 
+/* Dark mode: the same variables with dark values.
+   useTheme puts data-theme="dark" on <html>. */
+:root[data-theme='dark'] {
+  --red: #ff5a3c;
+  --red-dark: #ff8a70;
+  --bg: #0f1016;
+  --surface: #1a1b24;
+  --surface-soft: #252733;
+  --text: #ececf3;
+  --text-soft: #a2a4b5;
+  --border: #30323f;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
+}
+
 *,
 *::before,
 *::after {

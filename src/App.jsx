@@ -8,7 +8,9 @@ import SortSelect from './components/SortSelect.jsx'
 import FavoritesToggle from './components/FavoritesToggle.jsx'
 import SkeletonList from './components/SkeletonList.jsx'
 import EmptyDetails from './components/EmptyDetails.jsx'
+import ThemeToggle from './components/ThemeToggle.jsx'
 import { useFavorites } from './hooks/useFavorites.js'
+import { useTheme } from './hooks/useTheme.js'
 import { getIdFromUrl, filterPokemon, sortPokemon, formatName } from './utils/pokemon.js'
 import './App.css'
 
@@ -30,6 +32,8 @@ function App() {
   // Favorites: the ids, saved in localStorage by our custom hook.
   const { favorites, toggleFavorite } = useFavorites()
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+  // Light / dark mode, saved in localStorage by our custom hook.
+  const { theme, toggleTheme } = useTheme()
 
   // Type filter.
   const [selectedType, setSelectedType] = useState('all')
@@ -206,6 +210,7 @@ function App() {
             </div>
           </div>
           {status === 'success' && <SearchBar value={searchText} onChange={setSearchText} />}
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
         </div>
       </header>
 
