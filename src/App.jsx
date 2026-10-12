@@ -31,11 +31,13 @@ function App() {
   const { favorites, toggleFavorite } = useFavorites()
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
 
-  // Type filter: the chosen type, and the ids of the Pokémon of that type.
+  // Type filter.
   const [selectedType, setSelectedType] = useState('all')
-  const [typeIds, setTypeIds] = useState(null)
-  // 'loading' | 'error' | 'success'
-  const [typeStatus, setTypeStatus] = useState('success')
+  // Ids of each type we already loaded, e.g. { fire: [4, 5, 6, ...] }.
+  // Kept as a cache: going back to a type we loaded before is instant.
+  const [typeResults, setTypeResults] = useState({})
+  // The type whose request failed (or null).
+  const [typeErrorFor, setTypeErrorFor] = useState(null)
   const [typeReloadCount, setTypeReloadCount] = useState(0)
 
   // Load the list of 151 Pokémon.
@@ -70,9 +72,9 @@ function App() {
     return () => controller.abort()
   }, [reloadCount])
 
-  // Load which Pokémon belong to the selected type.
+  // Load which Pokémon belong to the selected type (only if not loaded yet).
   useEffect(() => {
-    if (selectedType === 'all') return
+    if (selectedType === 'all' || typeResults[selectedType]) return
 
     const controller = new AbortController()
 
@@ -85,19 +87,19 @@ function App() {
           throw new Error(`The server answered with status ${response.status}.`)
         }
         const data = await response.json()
-        // A Set makes "is this id in the type?" a quick check.
-        setTypeIds(new Set(data.pokemon.map((entry) => getIdFromUrl(entry.pokemon.url))))
-        setTypeStatus('success')
+        const ids = data.pokemon.map((entry) => getIdFromUrl(entry.pokemon.url))
+        // Copy the old cache and add this type to it.
+        setTypeResults((current) => ({ ...current, [selectedType]: ids }))
       } catch (error) {
         if (error.name === 'AbortError') return
-        setTypeStatus('error')
+        setTypeErrorFor(selectedType)
       }
     }
 
     loadType()
 
     return () => controller.abort()
-  }, [selectedType, typeReloadCount])
+  }, [selectedType, typeResults, typeReloadCount])
 
   // Pressing Escape closes the details panel.
   useEffect(() => {
@@ -116,20 +118,28 @@ function App() {
 
   function handleTypeChange(type) {
     setSelectedType(type)
-    setTypeIds(null)
-    setTypeStatus(type === 'all' ? 'success' : 'loading')
+    // A new choice gets a new try, even if this type failed before.
+    setTypeErrorFor(null)
   }
 
   function handleTypeRetry() {
-    setTypeStatus('loading')
+    setTypeErrorFor(null)
     setTypeReloadCount((count) => count + 1)
+  }
+
+  // The type filter's status is calculated, not stored. This way it can never
+  // get stuck on "loading": as soon as the result for the chosen type exists, it is ready.
+  let typeStatus = 'success'
+  if (selectedType !== 'all' && !typeResults[selectedType]) {
+    typeStatus = typeErrorFor === selectedType ? 'error' : 'loading'
   }
 
   // Not stored in state: calculated from the other state on every render,
   // so it is always up to date.
   let visiblePokemon = filterPokemon(pokemonList, searchText)
-  if (selectedType !== 'all' && typeIds) {
-    visiblePokemon = visiblePokemon.filter((pokemon) => typeIds.has(pokemon.id))
+  if (selectedType !== 'all' && typeResults[selectedType]) {
+    const typeIds = typeResults[selectedType]
+    visiblePokemon = visiblePokemon.filter((pokemon) => typeIds.includes(pokemon.id))
   }
   if (showFavoritesOnly) {
     visiblePokemon = visiblePokemon.filter((pokemon) => favorites.includes(pokemon.id))
