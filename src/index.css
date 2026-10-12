@@ -1,13 +1,17 @@
+/* Global styles: colors, fonts and resets used by the whole app. */
+
 :root {
-  --red: #dc0a2d;
-  --red-dark: #a8001d;
-  --bg: #f2f2f5;
+  --red: #e3350d;
+  --red-dark: #b12a0b;
+  --bg: #f4f5f9;
   --surface: #ffffff;
-  --text: #1d1d24;
-  --text-soft: #666673;
-  --border: #e1e1e8;
-  --radius: 14px;
-  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --surface-soft: #f0f1f6;
+  --text: #1c1d26;
+  --text-soft: #6b6d7c;
+  --border: #e3e4ec;
+  --radius: 18px;
+  --shadow-sm: 0 1px 3px rgba(20, 20, 40, 0.08);
+  --shadow: 0 8px 24px rgba(20, 20, 40, 0.1);
 
   color-scheme: light;
 }
@@ -22,8 +26,9 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 img {
@@ -36,4 +41,18 @@ h2,
 h3,
 p {
   margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+/* Hidden on screen, still read by screen readers. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

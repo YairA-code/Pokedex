@@ -6,6 +6,8 @@ import SearchBar from './components/SearchBar.jsx'
 import TypeFilter from './components/TypeFilter.jsx'
 import SortSelect from './components/SortSelect.jsx'
 import FavoritesToggle from './components/FavoritesToggle.jsx'
+import SkeletonList from './components/SkeletonList.jsx'
+import EmptyDetails from './components/EmptyDetails.jsx'
 import { useFavorites } from './hooks/useFavorites.js'
 import { getIdFromUrl, filterPokemon, sortPokemon, formatName } from './utils/pokemon.js'
 import './App.css'
@@ -97,6 +99,16 @@ function App() {
     return () => controller.abort()
   }, [selectedType, typeReloadCount])
 
+  // Pressing Escape closes the details panel.
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') setSelectedId(null)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    // Remove the listener when App goes away, so it is not added twice.
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   function handleRetry() {
     setStatus('loading')
     setReloadCount((count) => count + 1)
@@ -157,39 +169,62 @@ function App() {
     )
   }
 
+  const isListReady = typeStatus === 'success'
+
   return (
     <div className="app">
       <header className="app__header">
-        <h1>Pokédex</h1>
+        <div className="app__header-inner">
+          <div className="app__brand">
+            <span className="app__logo" aria-hidden="true"></span>
+            <div>
+              <h1 className="app__title">Pokédex</h1>
+              <p className="app__subtitle">Generation I · 151 Pokémon from PokéAPI</p>
+            </div>
+          </div>
+          {status === 'success' && <SearchBar value={searchText} onChange={setSearchText} />}
+        </div>
       </header>
 
-      {status === 'loading' && <StatusMessage type="loading" message="Loading Pokémon..." />}
+      {status === 'loading' && (
+        <main className="app__main app__main--single">
+          <StatusMessage type="loading" message="Loading Pokémon..." />
+          <SkeletonList />
+        </main>
+      )}
 
       {status === 'error' && (
-        <StatusMessage
-          type="error"
-          message={`Could not load the Pokémon. ${errorMessage}`}
-          onRetry={handleRetry}
-        />
+        <main className="app__main app__main--single">
+          <StatusMessage
+            type="error"
+            message={`Could not load the Pokémon. ${errorMessage}`}
+            onRetry={handleRetry}
+          />
+        </main>
       )}
 
       {status === 'success' && (
         <main className="app__main">
           <div className="app__list">
-            <SearchBar
-              value={searchText}
-              onChange={setSearchText}
-              resultCount={typeStatus === 'success' ? visiblePokemon.length : 0}
-            />
-            <SortSelect value={sortOrder} onChange={setSortOrder} />
-            <FavoritesToggle
-              isOn={showFavoritesOnly}
-              count={favorites.length}
-              onChange={setShowFavoritesOnly}
-            />
-            <TypeFilter selectedType={selectedType} onChange={handleTypeChange} />
+            <div className="toolbar">
+              <TypeFilter selectedType={selectedType} onChange={handleTypeChange} />
+              <div className="toolbar__row">
+                <p className="toolbar__count">
+                  {isListReady ? `${visiblePokemon.length} Pokémon shown` : 'Loading...'}
+                </p>
+                <div className="toolbar__actions">
+                  <FavoritesToggle
+                    isOn={showFavoritesOnly}
+                    count={favorites.length}
+                    onChange={setShowFavoritesOnly}
+                  />
+                  <SortSelect value={sortOrder} onChange={setSortOrder} />
+                </div>
+              </div>
+            </div>
             {renderList()}
           </div>
+
           {selectedId ? (
             <PokemonDetails
               key={selectedId}
@@ -200,12 +235,15 @@ function App() {
               onClose={() => setSelectedId(null)}
             />
           ) : (
-            <section className="pokemon-details pokemon-details--empty">
-              <p>Choose a Pokémon from the list to see its details.</p>
-            </section>
+            <EmptyDetails favoriteCount={favorites.length} />
           )}
         </main>
       )}
+
+      <footer className="app__footer">
+        Data and images from <a href="https://pokeapi.co/" target="_blank" rel="noreferrer">PokéAPI</a>.
+        Built with React + Vite.
+      </footer>
     </div>
   )
 }
