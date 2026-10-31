@@ -118,3 +118,11 @@ export interface PokemonListState {
   errorMessage: string
   retry: () => void
 }
+
+// One row of the compare table. winner is who has the higher value.
+export interface StatComparison {
+  name: string
+  valueA: number
+  valueB: number
+  winner: 'a' | 'b' | 'tie'
+}

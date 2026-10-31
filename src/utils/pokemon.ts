@@ -9,6 +9,8 @@ import type {
   PokemonDetail,
   PokemonSummary,
   SortOrder,
+  Stat,
+  StatComparison,
 } from '../types/pokemon.ts'
 
 // Small helper functions for Pokémon data.
@@ -171,4 +173,30 @@ export function toPokemonDetail(
     isMythical: species.is_mythical,
     evolutionStages: getEvolutionStages(evolution.chain),
   }
+}
+
+// The saved Pokémon, in the order of the list.
+export function getFavoritePokemon(pokemonList: PokemonSummary[], favorites: number[]): PokemonSummary[] {
+  return pokemonList.filter((pokemon) => favorites.includes(pokemon.id))
+}
+
+function getWinner(valueA: number, valueB: number): StatComparison['winner'] {
+  if (valueA === valueB) return 'tie'
+  return valueA > valueB ? 'a' : 'b'
+}
+
+export function getStatTotal(stats: Stat[]): number {
+  return stats.reduce((sum, stat) => sum + stat.value, 0)
+}
+
+// Puts the stats of two Pokémon side by side, one row per stat, plus a total row.
+// Stats are matched by name, so their order in the API answer does not matter.
+export function compareStats(statsA: Stat[], statsB: Stat[]): StatComparison[] {
+  const rows = statsA.map((stat) => {
+    const valueB = statsB.find((other) => other.name === stat.name)?.value ?? 0
+    return { name: stat.name, valueA: stat.value, valueB, winner: getWinner(stat.value, valueB) }
+  })
+  const totalA = getStatTotal(statsA)
+  const totalB = getStatTotal(statsB)
+  return [...rows, { name: 'total', valueA: totalA, valueB: totalB, winner: getWinner(totalA, totalB) }]
 }

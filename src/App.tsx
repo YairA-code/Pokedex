@@ -4,6 +4,8 @@ import Layout from './components/Layout.tsx'
 import ScrollToTop from './components/ScrollToTop.tsx'
 import ListPage from './pages/ListPage.tsx'
 import DetailsPage from './pages/DetailsPage.tsx'
+import FavoritesPage from './pages/FavoritesPage.tsx'
+import ComparePage from './pages/ComparePage.tsx'
 import NotFoundPage from './pages/NotFoundPage.tsx'
 import { useFavorites } from './hooks/useFavorites.ts'
 import { usePokemonList } from './hooks/usePokemonList.ts'
@@ -44,6 +46,17 @@ function App() {
             path="items/:id"
             element={<DetailsPage favorites={favorites} onToggleFavorite={toggleFavorite} />}
           />
+          <Route
+            path="favorites"
+            element={
+              <FavoritesPage
+                listState={listState}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+              />
+            }
+          />
+          <Route path="compare" element={<ComparePage listState={listState} />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

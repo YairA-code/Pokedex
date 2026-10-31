@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import StatBar from './StatBar.tsx'
 import FavoriteButton from './FavoriteButton.tsx'
 import EvolutionChain from './EvolutionChain.tsx'
-import { formatNumber, formatName, FIRST_ID, LAST_ID } from '../utils/pokemon.ts'
+import { formatNumber, formatName, getStatTotal, FIRST_ID, LAST_ID } from '../utils/pokemon.ts'
 import type { PokemonDetail } from '../types/pokemon.ts'
 
 interface PokemonDetailsProps {
@@ -18,7 +18,7 @@ function PokemonDetails({ pokemon, isFavorite, onToggleFavorite }: PokemonDetail
   const [isShiny, setIsShiny] = useState(false)
 
   const name = formatName(pokemon.name)
-  const totalStats = pokemon.stats.reduce((sum, stat) => sum + stat.value, 0)
+  const totalStats = getStatTotal(pokemon.stats)
 
   return (
     // The first type gives the panel its color (see .type-color--* in App.css).
@@ -105,6 +105,10 @@ function PokemonDetails({ pokemon, isFavorite, onToggleFavorite }: PokemonDetail
 
         <h2 className="pokemon-details__heading">Evolution</h2>
         <EvolutionChain stages={pokemon.evolutionStages} currentId={pokemon.id} />
+
+        <Link to={`/compare?a=${pokemon.id}`} className="pokemon-details__compare">
+          Compare with another Pokémon
+        </Link>
 
         <nav className="pokemon-details__nav" aria-label="Previous and next Pokémon">
           {pokemon.id > FIRST_ID && (
