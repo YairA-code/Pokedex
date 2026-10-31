@@ -18,7 +18,7 @@
       *Done when:* "Fire" shows only Fire Pokémon; a favorite stays after refresh; the details show the Pokédex text and "← / →" move between Pokémon; clicking an evolution stage opens it; fast clicks on types never get stuck; dark mode stays after refresh; at 375px the details open full screen and × closes them.
 - [x] **9 · TypeScript** — move the project to TypeScript: types for the API data and for the props of every component, no `any`, and `npm run build` runs the type check.
       *Done when:* there are no `.js`/`.jsx` files left in `src/`, `npm run build` and `npm test` pass, and the app works exactly as before.
-- [ ] **10 · React Router** — replace the side panel with real pages: `/items` (list), `/items/:id` (details, the id is read with `useParams`), a navigation menu with `NavLink`, and a 404 page for addresses that do not exist.
+- [x] **10 · React Router** — replace the side panel with real pages: `/items` (list), `/items/:id` (details, the id is read with `useParams`), a navigation menu with `NavLink`, and a 404 page for addresses that do not exist.
       *Done when:* clicking a card changes the address to `/items/25`; refreshing that address shows Pikachu; Back returns to the list with my filters still on; `/items/999` and `/nothing` show the 404 page.
 - [ ] **11 · Two more pages** — `/favorites` (the Pokémon I saved) and `/compare?a=1&b=25` (two Pokémon side by side, with the higher stat marked).
       *Done when:* a heart I tap shows up on `/favorites` and stays after refresh; on `/compare` choosing two Pokémon shows their stats and the address changes, so refreshing keeps the choice; the compare page has loading and error states.

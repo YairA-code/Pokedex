@@ -1,7 +1,12 @@
 import type {
   ApiChainLink,
+  ApiEvolutionChain,
   ApiFlavorText,
   ApiGenus,
+  ApiPokemon,
+  ApiSpecies,
+  ListFilters,
+  PokemonDetail,
   PokemonSummary,
   SortOrder,
 } from '../types/pokemon.ts'
@@ -111,4 +116,59 @@ export function getEvolutionStages(chain: ApiChainLink): PokemonSummary[][] {
   visit(chain, 0)
   // Remove empty stages (for example a baby Pokémon from a later generation).
   return stages.filter((stage) => stage !== undefined)
+}
+
+// Reads a Pokémon id from text (the address, for example).
+// Returns null if it is not a whole number from 1 to 151: "abc", "0", "999".
+export function parsePokemonId(value: string | null | undefined): number | null {
+  if (!value || !/^\d+$/.test(value)) return null
+  const id = Number(value)
+  return id >= FIRST_ID && id <= LAST_ID ? id : null
+}
+
+// The list the user sees: search, then type, then sort.
+// typeIds is null while no type is chosen (or it has not loaded yet).
+export function getVisiblePokemon(
+  pokemonList: PokemonSummary[],
+  filters: ListFilters,
+  typeIds: number[] | null,
+): PokemonSummary[] {
+  let visible = filterPokemon(pokemonList, filters.searchText)
+  if (typeIds) {
+    visible = visible.filter((pokemon) => typeIds.includes(pokemon.id))
+  }
+  return sortPokemon(visible, filters.sort)
+}
+
+// Turns the three API answers into the one simple object our components show.
+export function toPokemonDetail(
+  data: ApiPokemon,
+  species: ApiSpecies,
+  evolution: ApiEvolutionChain,
+): PokemonDetail {
+  const artwork = data.sprites.other?.['official-artwork']
+  return {
+    id: data.id,
+    name: data.name,
+    image: artwork?.front_default || getArtworkUrl(data.id),
+    shinyImage: artwork?.front_shiny || null,
+    types: data.types.map((item) => item.type.name),
+    // Height comes in decimeters and weight in hectograms.
+    heightMeters: data.height / 10,
+    weightKg: data.weight / 10,
+    abilities: data.abilities.map((item) => ({
+      name: item.ability.name,
+      isHidden: item.is_hidden,
+    })),
+    stats: data.stats.map((item) => ({
+      name: item.stat.name,
+      value: item.base_stat,
+    })),
+    genus: getEnglishGenus(species.genera),
+    description: getEnglishDescription(species.flavor_text_entries),
+    habitat: species.habitat ? species.habitat.name : null,
+    isLegendary: species.is_legendary,
+    isMythical: species.is_mythical,
+    evolutionStages: getEvolutionStages(evolution.chain),
+  }
 }

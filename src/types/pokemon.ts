@@ -102,3 +102,19 @@ export interface PokemonDetail {
 export type LoadStatus = 'loading' | 'error' | 'success'
 export type SortOrder = 'number' | 'name'
 export type Theme = 'light' | 'dark'
+
+// What the list page's filters are set to right now.
+export interface ListFilters {
+  searchText: string
+  // A type name such as 'fire', or 'all'.
+  type: string
+  sort: SortOrder
+}
+
+// The list of 151 Pokémon and how loading it went. App passes this to the pages.
+export interface PokemonListState {
+  pokemonList: PokemonSummary[]
+  status: LoadStatus
+  errorMessage: string
+  retry: () => void
+}

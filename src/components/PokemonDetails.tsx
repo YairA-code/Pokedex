@@ -1,128 +1,21 @@
-import { useState, useEffect } from 'react'
-import StatusMessage from './StatusMessage.tsx'
+import { useState } from 'react'
+import { Link } from 'react-router'
 import StatBar from './StatBar.tsx'
 import FavoriteButton from './FavoriteButton.tsx'
 import EvolutionChain from './EvolutionChain.tsx'
-import {
-  getArtworkUrl,
-  formatNumber,
-  formatName,
-  getEnglishDescription,
-  getEnglishGenus,
-  getEvolutionStages,
-  FIRST_ID,
-  LAST_ID,
-} from '../utils/pokemon.ts'
-import { API_BASE_URL, fetchJson, isAbortError } from '../utils/api.ts'
-import type {
-  ApiEvolutionChain,
-  ApiPokemon,
-  ApiSpecies,
-  LoadStatus,
-  PokemonDetail,
-} from '../types/pokemon.ts'
+import { formatNumber, formatName, FIRST_ID, LAST_ID } from '../utils/pokemon.ts'
+import type { PokemonDetail } from '../types/pokemon.ts'
 
 interface PokemonDetailsProps {
-  pokemonId: number
+  pokemon: PokemonDetail
   isFavorite: boolean
   onToggleFavorite: (id: number) => void
-  onSelect: (id: number) => void
-  onClose: () => void
 }
 
-// The details panel for the selected Pokémon.
-// App gives this component key={pokemonId}, so every new Pokémon gets a fresh
-// component with fresh state (status starts again at 'loading').
-function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onClose }: PokemonDetailsProps) {
-  const [pokemon, setPokemon] = useState<PokemonDetail | null>(null)
-  const [status, setStatus] = useState<LoadStatus>('loading')
-  const [reloadCount, setReloadCount] = useState(0)
+// Shows one Pokémon. It gets the data in props: DetailsPage does the loading.
+function PokemonDetails({ pokemon, isFavorite, onToggleFavorite }: PokemonDetailsProps) {
   // Show the shiny (rare color) artwork instead of the normal one.
   const [isShiny, setIsShiny] = useState(false)
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    async function loadDetails() {
-      try {
-        // Two requests at the same time: the Pokémon (types, stats...) and its
-        // species (description, category). Promise.all waits for both.
-        const [data, species] = await Promise.all([
-          fetchJson<ApiPokemon>(`${API_BASE_URL}/pokemon/${pokemonId}`, controller.signal),
-          fetchJson<ApiSpecies>(`${API_BASE_URL}/pokemon-species/${pokemonId}`, controller.signal),
-        ])
-        // The species tells us where its evolution chain is, so this request comes after.
-        const evolution = await fetchJson<ApiEvolutionChain>(species.evolution_chain.url, controller.signal)
-        // Keep only the fields we show, in a simple shape.
-        setPokemon({
-          id: data.id,
-          name: data.name,
-          image: data.sprites?.other?.['official-artwork']?.front_default || getArtworkUrl(data.id),
-          shinyImage: data.sprites?.other?.['official-artwork']?.front_shiny || null,
-          types: data.types.map((item) => item.type.name),
-          // Height comes in decimeters and weight in hectograms.
-          heightMeters: data.height / 10,
-          weightKg: data.weight / 10,
-          abilities: data.abilities.map((item) => ({
-            name: item.ability.name,
-            isHidden: item.is_hidden,
-          })),
-          stats: data.stats.map((item) => ({
-            name: item.stat.name,
-            value: item.base_stat,
-          })),
-          genus: getEnglishGenus(species.genera),
-          description: getEnglishDescription(species.flavor_text_entries),
-          habitat: species.habitat ? species.habitat.name : null,
-          isLegendary: species.is_legendary,
-          isMythical: species.is_mythical,
-          evolutionStages: getEvolutionStages(evolution.chain),
-        })
-        setStatus('success')
-      } catch (error) {
-        // A cancelled request is not a real error.
-        if (isAbortError(error)) return
-        setStatus('error')
-      }
-    }
-
-    loadDetails()
-
-    return () => controller.abort()
-  }, [pokemonId, reloadCount])
-
-  function handleRetry() {
-    setStatus('loading')
-    setReloadCount((count) => count + 1)
-  }
-
-  const closeButton = (
-    <button type="button" className="pokemon-details__close" aria-label="Close details" onClick={onClose}>
-      ×
-    </button>
-  )
-
-  if (status === 'loading') {
-    return (
-      <section className="pokemon-details pokemon-details--status">
-        {closeButton}
-        <StatusMessage type="loading" message="Loading details..." />
-      </section>
-    )
-  }
-
-  if (status === 'error' || pokemon === null) {
-    return (
-      <section className="pokemon-details pokemon-details--status">
-        {closeButton}
-        <StatusMessage
-          type="error"
-          message="Could not load the details of this Pokémon."
-          onRetry={handleRetry}
-        />
-      </section>
-    )
-  }
 
   const name = formatName(pokemon.name)
   const totalStats = pokemon.stats.reduce((sum, stat) => sum + stat.value, 0)
@@ -150,7 +43,6 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
             pokemonName={name}
             onToggle={() => onToggleFavorite(pokemon.id)}
           />
-          {closeButton}
         </div>
         <img
           className="pokemon-details__image"
@@ -160,7 +52,7 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
       </div>
 
       <div className="pokemon-details__body">
-        <h2 className="pokemon-details__name">{name}</h2>
+        <h1 className="pokemon-details__name">{name}</h1>
         {pokemon.genus && <p className="pokemon-details__genus">{pokemon.genus}</p>}
 
         <ul className="pokemon-details__types">
@@ -190,7 +82,7 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
           </div>
         </dl>
 
-        <h3 className="pokemon-details__heading">Abilities</h3>
+        <h2 className="pokemon-details__heading">Abilities</h2>
         <ul className="pokemon-details__abilities">
           {pokemon.abilities.map((ability) => (
             <li key={ability.name} className="ability-chip">
@@ -200,7 +92,7 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
           ))}
         </ul>
 
-        <h3 className="pokemon-details__heading">Base stats</h3>
+        <h2 className="pokemon-details__heading">Base stats</h2>
         <div className="pokemon-details__stats">
           {pokemon.stats.map((stat) => (
             <StatBar key={stat.name} name={stat.name} value={stat.value} />
@@ -211,26 +103,20 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
           </div>
         </div>
 
-        <h3 className="pokemon-details__heading">Evolution</h3>
-        <EvolutionChain stages={pokemon.evolutionStages} currentId={pokemon.id} onSelect={onSelect} />
+        <h2 className="pokemon-details__heading">Evolution</h2>
+        <EvolutionChain stages={pokemon.evolutionStages} currentId={pokemon.id} />
 
         <nav className="pokemon-details__nav" aria-label="Previous and next Pokémon">
-          <button
-            type="button"
-            className="pokemon-details__nav-button"
-            disabled={pokemon.id <= FIRST_ID}
-            onClick={() => onSelect(pokemon.id - 1)}
-          >
-            ← {formatNumber(Math.max(pokemon.id - 1, FIRST_ID))}
-          </button>
-          <button
-            type="button"
-            className="pokemon-details__nav-button"
-            disabled={pokemon.id >= LAST_ID}
-            onClick={() => onSelect(pokemon.id + 1)}
-          >
-            {formatNumber(Math.min(pokemon.id + 1, LAST_ID))} →
-          </button>
+          {pokemon.id > FIRST_ID && (
+            <Link to={`/items/${pokemon.id - 1}`} className="pokemon-details__nav-button">
+              ← {formatNumber(pokemon.id - 1)}
+            </Link>
+          )}
+          {pokemon.id < LAST_ID && (
+            <Link to={`/items/${pokemon.id + 1}`} className="pokemon-details__nav-button">
+              {formatNumber(pokemon.id + 1)} →
+            </Link>
+          )}
         </nav>
       </div>
     </section>
