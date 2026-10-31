@@ -708,7 +708,8 @@
   }
 }
 
-@media (max-width: 640px) {
+/* The header moves to two rows before the menu runs out of room. */
+@media (max-width: 860px) {
   .app__header-inner {
     flex-wrap: wrap;
     gap: 12px;
@@ -735,7 +736,15 @@
     padding: 8px 6px;
     text-align: center;
   }
+}
 
+@media (max-width: 360px) {
+  .app__nav-link {
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 640px) {
   /* Type buttons scroll sideways in one row instead of taking half the screen. */
   .type-filter {
     flex-wrap: nowrap;
