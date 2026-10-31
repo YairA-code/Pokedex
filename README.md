@@ -15,14 +15,19 @@ Browse a searchable list, open any Pokémon on its own page, save favorites and 
 Every network call has a loading state and an error state with a "Try again" button. The app has dark mode (🌙 / ☀️ in the header) and works on phones.
 
 ## How to run
-You need Node.js 20 or newer.
+You need Node.js 22.22 or newer (check with `node -v`).
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open the address Vite prints (usually http://localhost:5173).
+Then open the address Vite prints, usually http://localhost:5173. It takes you to the list at `/items`.
+
+The app runs on your own computer, only while `npm run dev` is running. It has no public address. If the page does not open:
+1. Check that the terminal running `npm run dev` is still open. If not, run the command again from the project folder.
+2. Use the address the terminal prints. If port 5173 is taken, Vite uses another one, such as 5174.
+3. To stop the app, press `Ctrl+C` in that terminal.
 
 ## How to run the tests
 
@@ -71,5 +76,5 @@ Tests sit next to the file they check, as `*.test.ts` or `*.test.tsx`.
 ## Planning files
 - `PRD.md` — the product requirements
 - `tasks.md` — the task plan
-- `PROMPTS.md` — log of prompts sent to the AI agent
+- `PROMPTS.md` — log of prompts sent to the AI agent, written automatically by a hook (`scripts/log-prompt.mjs`)
 - `docs/architecture.md` — the architecture
