@@ -1,18 +1,18 @@
 # Pokédex
 
-A master-detail React app for the original 151 Pokémon.
-Browse a searchable grid of cards, filter by type, save favorites, and click any Pokémon to see its Pokédex entry: artwork, category, types, description, height, weight, habitat, abilities and base stats.
+A master-detail React + TypeScript app for the original 151 Pokémon.
+Browse a searchable list, open any Pokémon on its own page, save favorites and compare two Pokémon side by side.
 
-## Features
-- **List** of 151 Pokémon loaded from the API, with artwork, number and name
-- **Details** on a banner in the Pokémon's type color, with its Pokédex description and category, stat bars and a stat total, the **evolution chain** (click a stage to open it), a **✨ Shiny** button for the rare-color artwork, and **← / →** buttons to move to the previous or next Pokémon
-- **Search** by name (`char`) or number (`25`, `#025`)
-- **Filter by type** — the colored buttons load the Pokémon of that type from the API
-- **Sort** by number or by name, **Clear filters** in one click, and **🎲 Surprise me** to open a random Pokémon from the ones shown
-- **Favorites** — tap the heart; favorites are saved in `localStorage`, so they stay after a refresh, and "♥ Favorites" shows only them
-- **Loading and error states** everywhere there is a network call: skeleton cards while the list loads, and a "Try again" button on every error
-- **Dark mode** — the 🌙 / ☀️ button in the header; follows the system setting at first and remembers your choice
-- **Responsive** — two columns on wide screens; on phones the details open full screen (× or Escape closes them)
+## Pages
+| Address | What you can do there |
+| --- | --- |
+| `/items` | Browse 151 cards; search by name (`char`) or number (`25`, `#025`); filter by type; sort; clear filters; open a random Pokémon with **🎲 Surprise me** |
+| `/items/:id` | See one Pokémon (for example `/items/25`): description, category, height, weight, habitat, abilities, stat bars and total, the evolution chain, a **✨ Shiny** button, and links to the previous and next Pokémon |
+| `/favorites` | See the Pokémon you saved with the heart, kept in `localStorage` after a refresh |
+| `/compare` | Choose two Pokémon and see their stats side by side with the higher one marked; the choice stays in the address (`/compare?a=1&b=25`) |
+| anything else | A "Page not found" page with a link back to the list |
+
+Every network call has a loading state and an error state with a "Try again" button. The app has dark mode (🌙 / ☀️ in the header) and works on phones.
 
 ## How to run
 You need Node.js 20 or newer.
@@ -24,12 +24,19 @@ npm run dev
 
 Then open the address Vite prints (usually http://localhost:5173).
 
+## How to run the tests
+
+```bash
+npm test          # run the Vitest tests once in the terminal
+npm run test:ui   # run them in the browser with Vitest UI
+```
+
 Other commands:
 
 ```bash
-npm test        # run the Vitest tests
-npm run lint    # check the code with oxlint
-npm run build   # production build into dist/
+npm run lint      # check the code with oxlint
+npm run build     # type check with TypeScript, then build into dist/
+npm run preview   # serve the built app
 ```
 
 ## API
@@ -48,40 +55,21 @@ Artwork images come from the PokéAPI sprites repository on GitHub.
 ## Project structure
 ```
 src/
-  App.jsx                  main component: all list state (list, search, type, sort, favorites, selected id)
-  components/
-    SearchBar.jsx          controlled search input (in the header)
-    TypeFilter.jsx         one button per type
-    SortSelect.jsx         sort dropdown
-    FavoritesToggle.jsx    "only my favorites" button
-    PokemonList.jsx        the list, built with map and key
-    PokemonCard.jsx        one card in the list
-    FavoriteButton.jsx     the heart button (cards and details)
-    PokemonDetails.jsx     fetches and shows one Pokémon's details
-    StatBar.jsx            one base-stat bar
-    EvolutionChain.jsx     evolution stages with arrows
-    ThemeToggle.jsx        light / dark button
-    StatusMessage.jsx      loading / error message
-    SkeletonList.jsx       placeholder cards while loading
-    EmptyDetails.jsx       details panel before anything is chosen
-  hooks/
-    useFavorites.js        custom hook: favorites state saved in localStorage
-    useTheme.js            custom hook: light / dark mode saved in localStorage
-  utils/
-    pokemon.js             helper functions (id from url, formatting, search, sort, species text, evolution stages)
-    pokemon.test.js        Vitest tests for the helpers
+  main.tsx            starts the app inside BrowserRouter
+  App.tsx             the addresses (Routes), and the state that several pages share
+  pages/              one component for each address
+  components/         the pieces the pages are built from, one per file
+  hooks/              usePokemonList, usePokemonDetail, useTypeIds, useFavorites, useTheme
+  types/pokemon.ts    types for the API answers and for our own data
+  utils/pokemon.ts    logic: search, sort, id validation, compare, API data conversion
+  utils/api.ts        fetchJson and error helpers
 ```
+Tests sit next to the file they check, as `*.test.ts` or `*.test.tsx`.
 
-## How it works (short)
-- `App` keeps the state: the list and its loading status, the search text, the selected type, the sort order, the favorites and the selected id.
-- The list is loaded with `fetch` inside `useEffect`; the status decides which of the three states is shown: loading, error or the list.
-- Choosing a type runs a second `useEffect` that loads `/type/{name}`. The ids are kept in a small cache (`typeResults`), so going back to a type is instant. The type's loading/error status is **calculated** from that cache instead of being stored, so it can never get stuck on "loading".
-- The visible list is **calculated on every render** — search, then type, then favorites, then sort — so it is never stored in state and is always up to date.
-- Clicking a card calls `onSelect(id)`, which comes down from `App` as a prop and updates `selectedId`.
-- `PokemonDetails` gets `key={selectedId}`, so every new pick starts with fresh state. Its effect loads `/pokemon/{id}` and `/pokemon-species/{id}` together with `Promise.all`, then the evolution chain (its URL comes from the species). `getEvolutionStages` walks the chain tree recursively and turns it into stages. An `AbortController` cancels old requests when the selection changes.
-- `useFavorites` and `useTheme` read `localStorage` once on start and save again whenever their value changes. Dark mode works by putting `data-theme="dark"` on `<html>`; the CSS gives the same color variables dark values.
+[docs/architecture.md](docs/architecture.md) explains the component tree, where each piece of state lives and why, and what happens from a click to the details.
 
 ## Planning files
 - `PRD.md` — the product requirements
 - `tasks.md` — the task plan
 - `PROMPTS.md` — log of prompts sent to the AI agent
+- `docs/architecture.md` — the architecture
