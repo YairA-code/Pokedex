@@ -1,4 +1,4 @@
-import { POKEMON_TYPES, formatName } from '../utils/pokemon.js'
+import { POKEMON_TYPES, formatName } from '../utils/pokemon.ts'
 
 // A row of buttons, one per type, plus "All".
 // The selected type lives in App; this component only shows it and reports clicks.

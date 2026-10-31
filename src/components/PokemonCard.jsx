@@ -1,5 +1,5 @@
 import FavoriteButton from './FavoriteButton.jsx'
-import { getArtworkUrl, formatNumber, formatName } from '../utils/pokemon.js'
+import { getArtworkUrl, formatNumber, formatName } from '../utils/pokemon.ts'
 
 // One Pokémon in the list: picture, number and name, plus a heart.
 // The card is a button, so it works with the mouse and with the keyboard.

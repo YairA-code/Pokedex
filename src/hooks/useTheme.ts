@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
+import type { Theme } from '../types/pokemon.ts'
 
 const STORAGE_KEY = 'pokedex-theme'
 
 // The first theme: the one saved before, or the system setting (dark mode on the computer/phone).
-function getStartTheme() {
+function getStartTheme(): Theme {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved === 'light' || saved === 'dark') return saved
@@ -16,7 +17,7 @@ function getStartTheme() {
 // A custom hook for light / dark mode.
 // It puts data-theme="dark" on <html>, and the CSS switches the colors.
 export function useTheme() {
-  const [theme, setTheme] = useState(getStartTheme)
+  const [theme, setTheme] = useState<Theme>(getStartTheme)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme

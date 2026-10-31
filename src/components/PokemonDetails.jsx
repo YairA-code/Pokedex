@@ -12,7 +12,7 @@ import {
   getEvolutionStages,
   FIRST_ID,
   LAST_ID,
-} from '../utils/pokemon.js'
+} from '../utils/pokemon.ts'
 
 // Loads one URL and returns the JSON. Throws if the server answers with an error.
 async function fetchJson(url, signal) {

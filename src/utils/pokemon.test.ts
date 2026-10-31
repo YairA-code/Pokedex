@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { getIdFromUrl, formatNumber, formatName, filterPokemon, sortPokemon,
-  getEnglishDescription, getEnglishGenus, getEvolutionStages } from './pokemon.js'
+  getEnglishDescription, getEnglishGenus, getEvolutionStages } from './pokemon.ts'
+import type { ApiChainLink } from '../types/pokemon.ts'
 
 describe('helpers', () => {
   it('reads the id from a PokéAPI url', () => {
@@ -78,7 +79,7 @@ describe('species helpers', () => {
 })
 
 describe('getEvolutionStages', () => {
-  const node = (name, id, next = []) => ({
+  const node = (name: string, id: number, next: ApiChainLink[] = []): ApiChainLink => ({
     species: { name, url: `https://pokeapi.co/api/v2/pokemon-species/${id}/` },
     evolves_to: next,
   })

@@ -1,4 +1,4 @@
-import { getArtworkUrl, formatName, formatNumber } from '../utils/pokemon.js'
+import { getArtworkUrl, formatName, formatNumber } from '../utils/pokemon.ts'
 
 // Shows the evolution stages with arrows between them.
 // Clicking a Pokémon opens its details (onSelect comes from App).

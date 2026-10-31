@@ -1,24 +1,32 @@
+import type {
+  ApiChainLink,
+  ApiFlavorText,
+  ApiGenus,
+  PokemonSummary,
+  SortOrder,
+} from '../types/pokemon.ts'
+
 // Small helper functions for Pokémon data.
 
 // The list API gives only a name and a url like ".../pokemon/25/".
 // The id is the number at the end of that url.
-export function getIdFromUrl(url) {
+export function getIdFromUrl(url: string): number {
   const parts = url.split('/').filter((part) => part !== '')
   return Number(parts[parts.length - 1])
 }
 
 // Official artwork image, from the PokéAPI sprites repository.
-export function getArtworkUrl(id) {
+export function getArtworkUrl(id: number): string {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`
 }
 
 // 25 -> "#025"
-export function formatNumber(id) {
+export function formatNumber(id: number): string {
   return '#' + String(id).padStart(3, '0')
 }
 
 // "mr-mime" -> "Mr Mime"
-export function formatName(name) {
+export function formatName(name: string): string {
   return name
     .split('-')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -28,7 +36,7 @@ export function formatName(name) {
 // Keep only the Pokémon that match the search text.
 // A number ("25" or "#025") matches the Pokémon with that number.
 // Any other text matches names that contain it ("char" -> Charmander...).
-export function filterPokemon(pokemonList, searchText) {
+export function filterPokemon(pokemonList: PokemonSummary[], searchText: string): PokemonSummary[] {
   const text = searchText.trim().toLowerCase().replace('#', '')
   if (text === '') return pokemonList
 
@@ -51,7 +59,7 @@ export const POKEMON_TYPES = [
 
 // Returns a new sorted list. sortOrder: 'number' | 'name'.
 // We copy the list first, because sort() changes the array it is called on.
-export function sortPokemon(pokemonList, sortOrder) {
+export function sortPokemon(pokemonList: PokemonSummary[], sortOrder: SortOrder): PokemonSummary[] {
   const copy = [...pokemonList]
   if (sortOrder === 'name') {
     copy.sort((a, b) => a.name.localeCompare(b.name))
@@ -63,7 +71,7 @@ export function sortPokemon(pokemonList, sortOrder) {
 
 // The species API has descriptions in many languages and game versions.
 // We take the newest English one and clean the line breaks the games use.
-export function getEnglishDescription(flavorTextEntries) {
+export function getEnglishDescription(flavorTextEntries: ApiFlavorText[]): string {
   const english = flavorTextEntries.filter((entry) => entry.language.name === 'en')
   if (english.length === 0) return ''
   const newest = english[english.length - 1]
@@ -74,7 +82,7 @@ export function getEnglishDescription(flavorTextEntries) {
 }
 
 // "Mouse Pokémon" — the English category of the species.
-export function getEnglishGenus(genera) {
+export function getEnglishGenus(genera: ApiGenus[]): string {
   const english = genera.find((item) => item.language.name === 'en')
   return english ? english.genus : ''
 }
@@ -87,11 +95,11 @@ export const LAST_ID = 151
 // We turn it into stages (a list per step), keeping only Pokémon up to #151:
 // Bulbasaur → [[bulbasaur], [ivysaur], [venusaur]]
 // Eevee     → [[eevee], [vaporeon, jolteon, flareon]]
-export function getEvolutionStages(chain) {
-  const stages = []
+export function getEvolutionStages(chain: ApiChainLink): PokemonSummary[][] {
+  const stages: PokemonSummary[][] = []
 
   // A function that calls itself for every next step (recursion).
-  function visit(node, depth) {
+  function visit(node: ApiChainLink, depth: number) {
     const id = getIdFromUrl(node.species.url)
     if (id <= LAST_ID) {
       if (!stages[depth]) stages[depth] = []
