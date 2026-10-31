@@ -1,5 +1,11 @@
+interface StatusMessageProps {
+  type: 'loading' | 'error'
+  message: string
+  onRetry?: () => void
+}
+
 // Shows a loading message, or an error message with a "Try again" button.
-function StatusMessage({ type, message, onRetry }) {
+function StatusMessage({ type, message, onRetry }: StatusMessageProps) {
   if (type === 'loading') {
     return (
       <div className="status status--loading" role="status">

@@ -1,8 +1,13 @@
 import { POKEMON_TYPES, formatName } from '../utils/pokemon.ts'
 
+interface TypeFilterProps {
+  selectedType: string
+  onChange: (type: string) => void
+}
+
 // A row of buttons, one per type, plus "All".
 // The selected type lives in App; this component only shows it and reports clicks.
-function TypeFilter({ selectedType, onChange }) {
+function TypeFilter({ selectedType, onChange }: TypeFilterProps) {
   const options = ['all', ...POKEMON_TYPES]
 
   return (

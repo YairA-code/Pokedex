@@ -1,5 +1,9 @@
+interface EmptyDetailsProps {
+  favoriteCount: number
+}
+
 // What the details panel shows before any Pokémon is chosen.
-function EmptyDetails({ favoriteCount }) {
+function EmptyDetails({ favoriteCount }: EmptyDetailsProps) {
   return (
     <section className="pokemon-details pokemon-details--empty">
       <div className="empty-state__icon" aria-hidden="true">?</div>

@@ -1,6 +1,11 @@
+interface SearchBarProps {
+  value: string
+  onChange: (value: string) => void
+}
+
 // The search box. It does not keep its own state:
 // the text lives in App and comes down in props (a "controlled" input).
-function SearchBar({ value, onChange }) {
+function SearchBar({ value, onChange }: SearchBarProps) {
   return (
     <div className="search-bar">
       {/* The label is hidden on screen but read by screen readers. */}

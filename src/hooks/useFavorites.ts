@@ -6,8 +6,10 @@ const STORAGE_KEY = 'pokedex-favorites'
 // data, or the browser blocks storage), we start with an empty list.
 function loadFavorites(): number[] {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')
-    return Array.isArray(saved) ? saved : []
+    // unknown: the saved text could hold anything, so we check it before using it.
+    const saved: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')
+    if (!Array.isArray(saved)) return []
+    return saved.filter((id): id is number => typeof id === 'number')
   } catch {
     return []
   }

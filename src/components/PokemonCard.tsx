@@ -1,10 +1,19 @@
-import FavoriteButton from './FavoriteButton.jsx'
+import FavoriteButton from './FavoriteButton.tsx'
 import { getArtworkUrl, formatNumber, formatName } from '../utils/pokemon.ts'
+import type { PokemonSummary } from '../types/pokemon.ts'
+
+interface PokemonCardProps {
+  pokemon: PokemonSummary
+  isSelected: boolean
+  isFavorite: boolean
+  onSelect: (id: number) => void
+  onToggleFavorite: (id: number) => void
+}
 
 // One Pokémon in the list: picture, number and name, plus a heart.
 // The card is a button, so it works with the mouse and with the keyboard.
 // The heart is a separate button next to it (a button inside a button is not allowed in HTML).
-function PokemonCard({ pokemon, isSelected, isFavorite, onSelect, onToggleFavorite }) {
+function PokemonCard({ pokemon, isSelected, isFavorite, onSelect, onToggleFavorite }: PokemonCardProps) {
   const className = isSelected ? 'pokemon-card pokemon-card--selected' : 'pokemon-card'
   const name = formatName(pokemon.name)
 

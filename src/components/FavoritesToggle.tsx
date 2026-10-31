@@ -1,5 +1,11 @@
+interface FavoritesToggleProps {
+  isOn: boolean
+  count: number
+  onChange: (isOn: boolean) => void
+}
+
 // A button that switches between "all Pokémon" and "only my favorites".
-function FavoritesToggle({ isOn, count, onChange }) {
+function FavoritesToggle({ isOn, count, onChange }: FavoritesToggleProps) {
   return (
     <button
       type="button"

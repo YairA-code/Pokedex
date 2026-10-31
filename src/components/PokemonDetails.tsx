@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import StatusMessage from './StatusMessage.jsx'
-import StatBar from './StatBar.jsx'
-import FavoriteButton from './FavoriteButton.jsx'
-import EvolutionChain from './EvolutionChain.jsx'
+import StatusMessage from './StatusMessage.tsx'
+import StatBar from './StatBar.tsx'
+import FavoriteButton from './FavoriteButton.tsx'
+import EvolutionChain from './EvolutionChain.tsx'
 import {
   getArtworkUrl,
   formatNumber,
@@ -13,23 +13,29 @@ import {
   FIRST_ID,
   LAST_ID,
 } from '../utils/pokemon.ts'
+import { API_BASE_URL, fetchJson, isAbortError } from '../utils/api.ts'
+import type {
+  ApiEvolutionChain,
+  ApiPokemon,
+  ApiSpecies,
+  LoadStatus,
+  PokemonDetail,
+} from '../types/pokemon.ts'
 
-// Loads one URL and returns the JSON. Throws if the server answers with an error.
-async function fetchJson(url, signal) {
-  const response = await fetch(url, { signal })
-  if (!response.ok) {
-    throw new Error(`The server answered with status ${response.status}.`)
-  }
-  return response.json()
+interface PokemonDetailsProps {
+  pokemonId: number
+  isFavorite: boolean
+  onToggleFavorite: (id: number) => void
+  onSelect: (id: number) => void
+  onClose: () => void
 }
 
 // The details panel for the selected Pokémon.
 // App gives this component key={pokemonId}, so every new Pokémon gets a fresh
 // component with fresh state (status starts again at 'loading').
-function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onClose }) {
-  const [pokemon, setPokemon] = useState(null)
-  // 'loading' | 'error' | 'success'
-  const [status, setStatus] = useState('loading')
+function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onClose }: PokemonDetailsProps) {
+  const [pokemon, setPokemon] = useState<PokemonDetail | null>(null)
+  const [status, setStatus] = useState<LoadStatus>('loading')
   const [reloadCount, setReloadCount] = useState(0)
   // Show the shiny (rare color) artwork instead of the normal one.
   const [isShiny, setIsShiny] = useState(false)
@@ -42,11 +48,11 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
         // Two requests at the same time: the Pokémon (types, stats...) and its
         // species (description, category). Promise.all waits for both.
         const [data, species] = await Promise.all([
-          fetchJson(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`, controller.signal),
-          fetchJson(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`, controller.signal),
+          fetchJson<ApiPokemon>(`${API_BASE_URL}/pokemon/${pokemonId}`, controller.signal),
+          fetchJson<ApiSpecies>(`${API_BASE_URL}/pokemon-species/${pokemonId}`, controller.signal),
         ])
         // The species tells us where its evolution chain is, so this request comes after.
-        const evolution = await fetchJson(species.evolution_chain.url, controller.signal)
+        const evolution = await fetchJson<ApiEvolutionChain>(species.evolution_chain.url, controller.signal)
         // Keep only the fields we show, in a simple shape.
         setPokemon({
           id: data.id,
@@ -75,7 +81,7 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
         setStatus('success')
       } catch (error) {
         // A cancelled request is not a real error.
-        if (error.name === 'AbortError') return
+        if (isAbortError(error)) return
         setStatus('error')
       }
     }
@@ -105,7 +111,7 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
     )
   }
 
-  if (status === 'error') {
+  if (status === 'error' || pokemon === null) {
     return (
       <section className="pokemon-details pokemon-details--status">
         {closeButton}
@@ -148,7 +154,7 @@ function PokemonDetails({ pokemonId, isFavorite, onToggleFavorite, onSelect, onC
         </div>
         <img
           className="pokemon-details__image"
-          src={isShiny ? pokemon.shinyImage : pokemon.image}
+          src={isShiny && pokemon.shinyImage ? pokemon.shinyImage : pokemon.image}
           alt={isShiny ? `${name} (shiny)` : name}
         />
       </div>

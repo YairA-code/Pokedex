@@ -1,6 +1,10 @@
+interface SkeletonListProps {
+  count?: number
+}
+
 // Grey placeholder cards shown while the list is loading,
 // so the page has its shape right away instead of being empty.
-function SkeletonList({ count = 12 }) {
+function SkeletonList({ count = 12 }: SkeletonListProps) {
   // Array.from({ length: 12 }) makes an array with 12 empty places to map over.
   const placeholders = Array.from({ length: count }, (_, index) => index)
 

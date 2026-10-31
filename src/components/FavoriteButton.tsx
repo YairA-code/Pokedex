@@ -1,5 +1,12 @@
+interface FavoriteButtonProps {
+  isFavorite: boolean
+  onToggle: () => void
+  pokemonName: string
+  className?: string
+}
+
 // A heart button that adds or removes a Pokémon from the favorites.
-function FavoriteButton({ isFavorite, onToggle, pokemonName, className = '' }) {
+function FavoriteButton({ isFavorite, onToggle, pokemonName, className = '' }: FavoriteButtonProps) {
   const label = isFavorite
     ? `Remove ${pokemonName} from favorites`
     : `Add ${pokemonName} to favorites`

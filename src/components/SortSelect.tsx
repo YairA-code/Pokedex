@@ -1,12 +1,19 @@
+import type { SortOrder } from '../types/pokemon.ts'
+
+interface SortSelectProps {
+  value: SortOrder
+  onChange: (value: SortOrder) => void
+}
+
 // A small dropdown to choose how the list is sorted.
-function SortSelect({ value, onChange }) {
+function SortSelect({ value, onChange }: SortSelectProps) {
   return (
     <label className="sort-select">
       <span className="sort-select__label">Sort</span>
       <select
         className="sort-select__input"
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) => onChange(event.target.value as SortOrder)}
       >
         <option value="number">Number</option>
         <option value="name">Name (A–Z)</option>

@@ -1,34 +1,34 @@
 import { useState, useEffect } from 'react'
-import PokemonList from './components/PokemonList.jsx'
-import PokemonDetails from './components/PokemonDetails.jsx'
-import StatusMessage from './components/StatusMessage.jsx'
-import SearchBar from './components/SearchBar.jsx'
-import TypeFilter from './components/TypeFilter.jsx'
-import SortSelect from './components/SortSelect.jsx'
-import FavoritesToggle from './components/FavoritesToggle.jsx'
-import SkeletonList from './components/SkeletonList.jsx'
-import EmptyDetails from './components/EmptyDetails.jsx'
-import ThemeToggle from './components/ThemeToggle.jsx'
+import PokemonList from './components/PokemonList.tsx'
+import PokemonDetails from './components/PokemonDetails.tsx'
+import StatusMessage from './components/StatusMessage.tsx'
+import SearchBar from './components/SearchBar.tsx'
+import TypeFilter from './components/TypeFilter.tsx'
+import SortSelect from './components/SortSelect.tsx'
+import FavoritesToggle from './components/FavoritesToggle.tsx'
+import SkeletonList from './components/SkeletonList.tsx'
+import EmptyDetails from './components/EmptyDetails.tsx'
+import ThemeToggle from './components/ThemeToggle.tsx'
 import { useFavorites } from './hooks/useFavorites.ts'
 import { useTheme } from './hooks/useTheme.ts'
 import { getIdFromUrl, filterPokemon, sortPokemon, formatName } from './utils/pokemon.ts'
+import { API_BASE_URL, fetchJson, getErrorMessage, isAbortError } from './utils/api.ts'
+import type { ApiPokemonList, ApiType, LoadStatus, PokemonSummary, SortOrder } from './types/pokemon.ts'
 import './App.css'
 
-const LIST_URL = 'https://pokeapi.co/api/v2/pokemon?limit=151'
+const LIST_URL = `${API_BASE_URL}/pokemon?limit=151`
 
 function App() {
-  const [pokemonList, setPokemonList] = useState([])
-  // 'loading' | 'error' | 'success'
-  const [status, setStatus] = useState('loading')
+  const [pokemonList, setPokemonList] = useState<PokemonSummary[]>([])
+  const [status, setStatus] = useState<LoadStatus>('loading')
   const [errorMessage, setErrorMessage] = useState('')
   // Changing this number runs the fetch effect again ("Try again").
   const [reloadCount, setReloadCount] = useState(0)
   // The id of the Pokémon the user clicked. null = nothing selected yet.
-  const [selectedId, setSelectedId] = useState(null)
+  const [selectedId, setSelectedId] = useState<number | null>(null)
   // What the user typed in the search box.
   const [searchText, setSearchText] = useState('')
-  // 'number' | 'name'
-  const [sortOrder, setSortOrder] = useState('number')
+  const [sortOrder, setSortOrder] = useState<SortOrder>('number')
   // Favorites: the ids, saved in localStorage by our custom hook.
   const { favorites, toggleFavorite } = useFavorites()
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
@@ -39,9 +39,9 @@ function App() {
   const [selectedType, setSelectedType] = useState('all')
   // Ids of each type we already loaded, e.g. { fire: [4, 5, 6, ...] }.
   // Kept as a cache: going back to a type we loaded before is instant.
-  const [typeResults, setTypeResults] = useState({})
+  const [typeResults, setTypeResults] = useState<Record<string, number[]>>({})
   // The type whose request failed (or null).
-  const [typeErrorFor, setTypeErrorFor] = useState(null)
+  const [typeErrorFor, setTypeErrorFor] = useState<string | null>(null)
   const [typeReloadCount, setTypeReloadCount] = useState(0)
 
   // Load the list of 151 Pokémon.
@@ -51,11 +51,7 @@ function App() {
 
     async function loadPokemon() {
       try {
-        const response = await fetch(LIST_URL, { signal: controller.signal })
-        if (!response.ok) {
-          throw new Error(`The server answered with status ${response.status}.`)
-        }
-        const data = await response.json()
+        const data = await fetchJson<ApiPokemonList>(LIST_URL, controller.signal)
         // Add an id to every item, so we can use it as the key.
         const list = data.results.map((item) => ({
           id: getIdFromUrl(item.url),
@@ -65,8 +61,8 @@ function App() {
         setStatus('success')
       } catch (error) {
         // A cancelled request is not a real error.
-        if (error.name === 'AbortError') return
-        setErrorMessage(error.message)
+        if (isAbortError(error)) return
+        setErrorMessage(getErrorMessage(error))
         setStatus('error')
       }
     }
@@ -84,18 +80,12 @@ function App() {
 
     async function loadType() {
       try {
-        const response = await fetch(`https://pokeapi.co/api/v2/type/${selectedType}`, {
-          signal: controller.signal,
-        })
-        if (!response.ok) {
-          throw new Error(`The server answered with status ${response.status}.`)
-        }
-        const data = await response.json()
+        const data = await fetchJson<ApiType>(`${API_BASE_URL}/type/${selectedType}`, controller.signal)
         const ids = data.pokemon.map((entry) => getIdFromUrl(entry.pokemon.url))
         // Copy the old cache and add this type to it.
         setTypeResults((current) => ({ ...current, [selectedType]: ids }))
       } catch (error) {
-        if (error.name === 'AbortError') return
+        if (isAbortError(error)) return
         setTypeErrorFor(selectedType)
       }
     }
@@ -107,7 +97,7 @@ function App() {
 
   // Pressing Escape closes the details panel.
   useEffect(() => {
-    function handleKeyDown(event) {
+    function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') setSelectedId(null)
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -120,7 +110,7 @@ function App() {
     setReloadCount((count) => count + 1)
   }
 
-  function handleTypeChange(type) {
+  function handleTypeChange(type: string) {
     setSelectedType(type)
     // A new choice gets a new try, even if this type failed before.
     setTypeErrorFor(null)
@@ -133,7 +123,7 @@ function App() {
 
   // The type filter's status is calculated, not stored. This way it can never
   // get stuck on "loading": as soon as the result for the chosen type exists, it is ready.
-  let typeStatus = 'success'
+  let typeStatus: LoadStatus = 'success'
   if (selectedType !== 'all' && !typeResults[selectedType]) {
     typeStatus = typeErrorFor === selectedType ? 'error' : 'loading'
   }

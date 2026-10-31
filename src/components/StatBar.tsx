@@ -1,7 +1,12 @@
 // Almost every base stat is below 180, so a full bar means 180 or more.
 const BAR_MAX = 180
 
-const STAT_LABELS = {
+interface StatBarProps {
+  name: string
+  value: number
+}
+
+const STAT_LABELS: Record<string, string> = {
   hp: 'HP',
   attack: 'Attack',
   defense: 'Defense',
@@ -11,14 +16,14 @@ const STAT_LABELS = {
 }
 
 // low / medium / high — decides the bar color in the CSS.
-function getLevel(value) {
+function getLevel(value: number): 'low' | 'medium' | 'high' {
   if (value < 60) return 'low'
   if (value < 100) return 'medium'
   return 'high'
 }
 
 // One base stat: a label, the number and a bar.
-function StatBar({ name, value }) {
+function StatBar({ name, value }: StatBarProps) {
   const percent = Math.min((value / BAR_MAX) * 100, 100)
 
   return (
